@@ -1,0 +1,18 @@
+doctype html
+html(lang ="ja")
+  head
+    -var title= 'けいじばん'
+    title #{title}
+    meta(charset="UTF-8")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    h1 #{title}
+    div.posts
+      h2 書き込みがここに並ぶ
+
+    form(method="post" action="/write")
+      input(type="text" name="postwriter" placeholder="名前")
+      br
+      textarea(name="postbody" cols="100" rows="10" placeholder="コメント内容")
+      br
+      button(type="submit") 投稿する
