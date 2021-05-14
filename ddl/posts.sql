@@ -1,6 +1,7 @@
-create table posts (
-    id integer primary key,
-    name varchar(25) ,
-    body varchar(800) not null,
-    timestamp varchar(21) not null
+create table posts(
+    id SERIAL PRIMARY KEY , 
+    name VARCHAR(50) , 
+    body text NOT NULL, 
+    createdAt TIMESTAMP NOT NULL, 
+    updatedAt TIMESTAMP NOT NULL
 );
