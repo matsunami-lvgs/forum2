@@ -4,7 +4,7 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  const fuga = selectAll;
+  const fuga = selectAll();
   res.render('index', {
     title: 'けいじばん',
     posts: fuga,
@@ -13,6 +13,7 @@ router.get('/', function(req, res, next) {
   console.log('この下にkekka')
   console.log (fuga);
 });
+
 
 router.post('/write',function(req,res,next){
   const date = new Date;

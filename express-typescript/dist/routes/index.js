@@ -10,7 +10,7 @@ const router = express_1.default.Router();
 exports.router = router;
 /* GET home page. */
 router.get('/', function (req, res, next) {
-    const fuga = db_cliant_1.selectAll;
+    const fuga = db_cliant_1.selectAll();
     res.render('index', {
         title: 'けいじばん',
         posts: fuga,

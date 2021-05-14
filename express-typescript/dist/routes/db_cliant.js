@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.selectAll = exports.insert = void 0;
 const sequelize_1 = require("sequelize");
 const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum');
+const table_name = 'posts';
 class Posts extends sequelize_1.Model {
 }
 Posts.init({
@@ -20,22 +21,20 @@ Posts.init({
         primaryKey: true
     },
     name: {
-        type: new sequelize_1.DataTypes.STRING(25)
+        type: new sequelize_1.DataTypes.STRING(25),
+        allowNull: true,
     },
     body: {
-        type: sequelize_1.DataTypes.STRING(800),
-        allowNull: false
+        type: new sequelize_1.DataTypes.STRING,
+        allowNull: false,
     },
 }, {
-    tableName: 'posts',
+    tableName: table_name,
     sequelize,
 });
 const insert = function (inputname, inputbody) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Posts.create({
-            name: inputname,
-            body: inputbody,
-        });
+        yield Posts.create({ name: inputname, body: inputbody });
     });
 };
 exports.insert = insert;
@@ -47,13 +46,14 @@ const create = function (inputname, inputbody) {
 };
 function selectAll() {
     return __awaiter(this, void 0, void 0, function* () {
-        const hoge = yield Posts.findAll({});
-        console.log('この下hoge.name');
-        console.log(hoge.map);
+        const hoge = yield Posts.findAll();
+        console.log('この下hogu.name');
+        console.log(hoge);
         return (hoge);
     });
 }
 exports.selectAll = selectAll;
+;
 const selectID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.findAll({
