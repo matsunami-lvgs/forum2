@@ -1,5 +1,5 @@
-import createError from 'http-errors';
-import express from 'express';
+import createError, { HttpError } from 'http-errors';
+import express, { NextFunction } from 'express';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
@@ -28,8 +28,7 @@ app.use(function(req, res, next) {
 // error handler
 //TODO
 //引数の型がAnyになる問題が解決できないのでいったんコメントアウトして先に進める
-/*
-app.use(function(err, req, res, next) {
+app.use(function(err:HttpError,res:any,req:any) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -38,5 +37,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-*/
+
 module.exports = app;

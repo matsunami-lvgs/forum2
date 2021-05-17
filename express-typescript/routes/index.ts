@@ -1,24 +1,50 @@
 import express from 'express';
-import { insert ,selectAll} from './db_cliant';
+import { insert ,selectAll, deleteID, selectID} from './db_cliant';
 const router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  const fuga = selectAll();
+router.get('/', async function(req, res, next) {
+  const fuga = await selectAll();
+  console.log('Indexでのfugaの中身')
+  console.log(fuga);
   res.render('index', {
     title: 'けいじばん',
     posts: fuga,
-    neko: 'にゃーん'
   });
-  console.log('この下にkekka')
-  console.log (fuga);
 });
 
+router.get('/admin', async function(req, res, next) {
+  const fuga = await selectAll();
+  console.log('Indexでのfugaの中身')
+  console.log(fuga);
+  res.render('admin', {
+    title: 'けいじばん（管理用）',
+    posts: fuga,
+  });
+});
 
-router.post('/write',function(req,res,next){
+//TODO
+router.post('/admin/update', async function(req, res, next){
+  console.log(req.body.updatepost);
+  const fuga = await selectID(req.body.updatepost);
+/*  res.render('update',{
+    posts: fuga
+  });*/
+  res.redirect('/admin/')
+});
+
+router.post('/write',async function(req,res,next){
   const date = new Date;
   console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${date.toLocaleString("ja")}`);
-  insert(req.body.postwriter,req.body.postbody);
+  await insert(req.body.postwriter,req.body.postbody);
+  res.redirect('/');
+});
+
+//TODO
+router.post('/delete',async function(req,res,next){
+  const date = new Date;
+  console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${date.toLocaleString("ja")}`);
+  await deleteID(req.body.deletepost);
   res.redirect('/');
 });
 

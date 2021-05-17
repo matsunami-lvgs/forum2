@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.selectAll = exports.insert = void 0;
+exports.selectID = exports.deleteID = exports.selectAll = exports.insert = void 0;
 const sequelize_1 = require("sequelize");
 const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum');
 const table_name = 'posts';
@@ -17,8 +17,9 @@ class Posts extends sequelize_1.Model {
 }
 Posts.init({
     id: {
-        type: sequelize_1.DataTypes.INTEGER,
-        primaryKey: true
+        type: new sequelize_1.DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     },
     name: {
         type: new sequelize_1.DataTypes.STRING(25),
@@ -26,6 +27,14 @@ Posts.init({
     },
     body: {
         type: new sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    createdAt: {
+        type: new sequelize_1.DataTypes.DATE,
+        allowNull: false,
+    },
+    updatedAt: {
+        type: new sequelize_1.DataTypes.DATE,
         allowNull: false,
     },
 }, {
@@ -44,25 +53,40 @@ const create = function (inputname, inputbody) {
         yield Posts.sync();
     });
 };
-function selectAll() {
+const selectAll = function () {
     return __awaiter(this, void 0, void 0, function* () {
         const hoge = yield Posts.findAll();
-        console.log('この下hogu.name');
+        //TODO:あとで消す
+        console.log('この下hoge');
         console.log(hoge);
+        console.log('この下hogeMap');
+        const hogeMap = yield hoge.filter(Posts => {
+            Posts.id;
+        });
+        console.log(hogeMap);
+        console.log('この下hogeの型とhogeMapの型');
+        console.log(typeof hoge);
+        console.log(typeof hogeMap);
+        //あとで消す
         return (hoge);
+        //const hogeJson = JSON.key(hogeMap);
+        //console.log (hogeJson)
+        //いったん区切りで実装
+        //おそらくはこいつSeledtAllを外に出して、文字列を返す用の関数を置いて実装という形になるのだろ
     });
-}
+};
 exports.selectAll = selectAll;
-;
 const selectID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Posts.findAll({
+        const hoge = yield Posts.findAll({
             where: {
                 id: postsID
             }
         });
+        return hoge;
     });
 };
+exports.selectID = selectID;
 const deleteID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.destroy({
@@ -72,6 +96,7 @@ const deleteID = function (postsID) {
         });
     });
 };
+exports.deleteID = deleteID;
 const updateID = function (postID, postName, postBody) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.update({ name: postName, body: postBody }, {

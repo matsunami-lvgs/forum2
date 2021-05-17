@@ -15,6 +15,10 @@ html(lang ="ja")
         br
         span #{toukou.body}
         span 投稿時間: #{toukou.createdAt}
+        form(method="post" action="./delete")
+          button(type="submit" name="deletepost" value=toukou.id) 削除
+        form(method="post" action="./update")
+          button(type="submit" name="updatepost" value=toukou.id) 編集
     form(method="post" action="/write")
       input(type="text" name="postwriter" placeholder="名前")
       br
@@ -22,4 +26,4 @@ html(lang ="ja")
       br
       button(type="submit") 投稿する
     p
-    a(href="/admin") 管理者ログイン
+    a(href="/") ログアウト
