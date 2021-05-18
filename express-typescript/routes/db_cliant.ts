@@ -1,5 +1,5 @@
-import { JSON } from 'sequelize';
 import { Sequelize , Model, DataTypes } from 'sequelize';
+import dayjs from 'dayjs';
 const sequelize = new Sequelize(
     'postgres://postgres:hoge@localhost/forum'
 );
@@ -9,8 +9,9 @@ class Posts extends Model {
     public id!:number;
     public name!:string|null;
     public body!:string;
-    public createdAt!:string;
-    public updatedAt!:string;
+    public showCreated!:string;
+    public createdAt!:Date;
+    public updatedAt!:Date;
 }
 
 
@@ -22,15 +23,20 @@ Posts.init(
             autoIncrement:true,
         },
         name: {
-            type: new DataTypes.STRING(25),
+            type: new DataTypes.STRING(30),
             allowNull: true,
         },
         body: {
+            type: new DataTypes.TEXT,
+            allowNull: false,
+        },
+        showCreated: {
             type: new DataTypes.STRING,
             allowNull: false,
         },
         createdAt: {
-            type: new DataTypes.DATE,
+            type: new DataTypes.DATE
+            ,
             allowNull: false,
         },
         updatedAt: {
@@ -45,36 +51,27 @@ Posts.init(
 );
 
 const insert = async function (inputname:string,inputbody:string) {
-    await Posts.create({name:inputname,body:inputbody});
+    await Posts.create({name:inputname,body:inputbody,showCreated:formatTimestamp(new Date)});
 };
 
 //テーブル作成用
-const create = async function (inputname:string,inputbody:string) {
+const create = async function () {
     await Posts.sync();
 };
 
 const selectAll  =async function ():Promise<object>{
-    const hoge = await Posts.findAll();
-    //TODO:あとで消す
-    console.log('この下hoge');
-    console.log(hoge);
-    console.log('この下hogeMap');
-    const hogeMap:object = await hoge.filter(Posts=>{
-        Posts.id;
+    const hoge = await Posts.findAll({
+        order:[['id','ASC']]
     });
-    console.log (hogeMap);
-    console.log('この下hogeの型とhogeMapの型');
-    console.log(typeof hoge);
-    console.log(typeof hogeMap); 
-    //あとで消す
     return(hoge);
     //const hogeJson = JSON.key(hogeMap);
     //console.log (hogeJson)
     //いったん区切りで実装
+    //タイムスタンプ操作ライブラリをインストールして書き換える
     //おそらくはこいつSeledtAllを外に出して、文字列を返す用の関数を置いて実装という形になるのだろ
 };
 
-const selectID = async function (postsID:number):Promise<object>{
+const selectwhereID = async function (postsID:number):Promise<object>{
     const hoge = await Posts.findAll({
         where:{
             id:postsID
@@ -83,7 +80,7 @@ const selectID = async function (postsID:number):Promise<object>{
     return hoge;
 };
 
-const deleteID = async function (postsID:number) {
+const deletewhereID = async function (postsID:number) {
     await Posts.destroy({
         where:{
             id:postsID
@@ -91,7 +88,7 @@ const deleteID = async function (postsID:number) {
     });
 };
 
-const updateID = async function (postID:number,postName:string,postBody:string) {
+const updatewhereID = async function (postID:number,postName:string,postBody:string) {
     await Posts.update({name:postName,body:postBody},{
         where: {
             id : postID
@@ -99,4 +96,14 @@ const updateID = async function (postID:number,postName:string,postBody:string) 
     });
 };
 
-export{insert, selectAll, deleteID,selectID};
+const resetTable = async function () {
+    await sequelize.query('TRUNCATE TABLE posts RESTART IDENTITY');
+}
+
+const formatTimestamp=function(timestamp:Date){
+    const formatted:string = dayjs(timestamp).format('YYYY/MM/DD HH:mm:ss.SSS')
+    return(formatted);
+};
+
+export{insert, selectAll, deletewhereID,selectwhereID,updatewhereID,resetTable };
+export{create};

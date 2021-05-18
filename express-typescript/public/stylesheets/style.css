@@ -6,3 +6,31 @@ body {
 a {
   color: #00B7FF;
 }
+
+id {
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+name {
+  margin-right: 7px;
+  color: blue;
+  font-size: 12px;
+}
+
+timestamp {
+  font-size: 12px;
+}
+
+postbody{
+  font-size: 15px;
+}
+
+textarea{
+  height: 150px;
+  width:500px;
+}
+
+.nameform{
+  width: 500px;
+}

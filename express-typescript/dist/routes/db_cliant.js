@@ -8,9 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.selectID = exports.deleteID = exports.selectAll = exports.insert = void 0;
+exports.create = exports.resetTable = exports.updatewhereID = exports.selectwhereID = exports.deletewhereID = exports.selectAll = exports.insert = void 0;
 const sequelize_1 = require("sequelize");
+const dayjs_1 = __importDefault(require("dayjs"));
 const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum');
 const table_name = 'posts';
 class Posts extends sequelize_1.Model {
@@ -22,10 +26,14 @@ Posts.init({
         autoIncrement: true,
     },
     name: {
-        type: new sequelize_1.DataTypes.STRING(25),
+        type: new sequelize_1.DataTypes.STRING(30),
         allowNull: true,
     },
     body: {
+        type: new sequelize_1.DataTypes.TEXT,
+        allowNull: false,
+    },
+    showCreated: {
         type: new sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
@@ -43,40 +51,32 @@ Posts.init({
 });
 const insert = function (inputname, inputbody) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Posts.create({ name: inputname, body: inputbody });
+        yield Posts.create({ name: inputname, body: inputbody, showCreated: formatTimestamp(new Date) });
     });
 };
 exports.insert = insert;
 //テーブル作成用
-const create = function (inputname, inputbody) {
+const create = function () {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.sync();
     });
 };
+exports.create = create;
 const selectAll = function () {
     return __awaiter(this, void 0, void 0, function* () {
-        const hoge = yield Posts.findAll();
-        //TODO:あとで消す
-        console.log('この下hoge');
-        console.log(hoge);
-        console.log('この下hogeMap');
-        const hogeMap = yield hoge.filter(Posts => {
-            Posts.id;
+        const hoge = yield Posts.findAll({
+            order: [['id', 'ASC']]
         });
-        console.log(hogeMap);
-        console.log('この下hogeの型とhogeMapの型');
-        console.log(typeof hoge);
-        console.log(typeof hogeMap);
-        //あとで消す
         return (hoge);
         //const hogeJson = JSON.key(hogeMap);
         //console.log (hogeJson)
         //いったん区切りで実装
+        //タイムスタンプ操作ライブラリをインストールして書き換える
         //おそらくはこいつSeledtAllを外に出して、文字列を返す用の関数を置いて実装という形になるのだろ
     });
 };
 exports.selectAll = selectAll;
-const selectID = function (postsID) {
+const selectwhereID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         const hoge = yield Posts.findAll({
             where: {
@@ -86,8 +86,8 @@ const selectID = function (postsID) {
         return hoge;
     });
 };
-exports.selectID = selectID;
-const deleteID = function (postsID) {
+exports.selectwhereID = selectwhereID;
+const deletewhereID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.destroy({
             where: {
@@ -96,8 +96,8 @@ const deleteID = function (postsID) {
         });
     });
 };
-exports.deleteID = deleteID;
-const updateID = function (postID, postName, postBody) {
+exports.deletewhereID = deletewhereID;
+const updatewhereID = function (postID, postName, postBody) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.update({ name: postName, body: postBody }, {
             where: {
@@ -105,4 +105,15 @@ const updateID = function (postID, postName, postBody) {
             }
         });
     });
+};
+exports.updatewhereID = updatewhereID;
+const resetTable = function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield sequelize.query('TRUNCATE TABLE posts RESTART IDENTITY');
+    });
+};
+exports.resetTable = resetTable;
+const formatTimestamp = function (timestamp) {
+    const formatted = dayjs_1.default(timestamp).format('YYYY/MM/DD HH:mm:ss.SSS');
+    return (formatted);
 };

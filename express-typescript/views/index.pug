@@ -7,19 +7,30 @@ html(lang ="ja")
   body
     h1 #{title}
     h2 書き込み
+    if  isAdmin===true
+      form(method="post" action="/admin/reset")
+        button(type="submit") りせっと
     p
     each toukou in posts
       div 
-        span #{toukou.id}
-        span 投稿者: #{toukou.name}
+        id #{toukou.id}
+        name 投稿者: #{toukou.name}
+        timestamp 投稿時間: #{toukou.showCreated}
         br
-        span #{toukou.body}
-        span 投稿時間: #{toukou.createdAt}
+        postbody #{toukou.body}
+        if isAdmin===true
+          form(method="post" action="/admin/delete")
+            button(type="submit" name="deleteid" value=toukou.id) 削除
+          form(method="post" action="/admin/update")
+            button(type="submit" name="updateid" value=toukou.id) 編集
     form(method="post" action="/write")
-      input(type="text" name="postwriter" placeholder="名前")
+      input.nameform(type="text" name="postwriter" placeholder="名前")
       br
-      textarea(name="postbody" cols="100" rows="10" placeholder="コメント内容")
+      textarea(name="postbody" placeholder="コメント内容")
       br
       button(type="submit") 投稿する
     p
-    a(href="/admin") 管理者ログイン
+    if isAdmin===true
+      a(href="/") ログアウト
+    else
+      a(href="/admin") 管理者ログイン
