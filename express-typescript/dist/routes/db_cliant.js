@@ -68,11 +68,6 @@ const selectAll = function () {
             order: [['id', 'ASC']]
         });
         return (hoge);
-        //const hogeJson = JSON.key(hogeMap);
-        //console.log (hogeJson)
-        //いったん区切りで実装
-        //タイムスタンプ操作ライブラリをインストールして書き換える
-        //おそらくはこいつSeledtAllを外に出して、文字列を返す用の関数を置いて実装という形になるのだろ
     });
 };
 exports.selectAll = selectAll;

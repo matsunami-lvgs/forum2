@@ -1,6 +1,6 @@
-import createError, { HttpError } from 'http-errors';
-import express, { NextFunction } from 'express';
-import path from 'path';
+import createError from 'http-errors';
+import express from 'express';
+import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
@@ -15,8 +15,12 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static('public'));
+app.use(session({
+  secret: 'keyboard cat',
+  resave: true,
+  saveUninitialized: false,
+}));
 
 app.use('/', indexRouter);
 app.use('/', usersRouter);
@@ -28,7 +32,7 @@ app.use(function(req, res, next) {
 // error handler
 //TODO
 //引数の型がAnyになる問題が解決できないのでいったんコメントアウトして先に進める
-app.use(function(err:HttpError,res:any,req:any) {
+/*app.use(function(err,req,res) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -36,6 +40,6 @@ app.use(function(err:HttpError,res:any,req:any) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
-});
+});*/
 
 module.exports = app;

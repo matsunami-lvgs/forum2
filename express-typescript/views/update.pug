@@ -1,11 +1,11 @@
 doctype html
 html(lang ="ja")
   head
-    title #{title}
+    title #{書き込み編集}
     meta(charset="UTF-8")
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    h1 #{title}
+    h1 #{書き込み編集}
     h2 編集
     p
     each toukou in posts
@@ -15,7 +15,7 @@ html(lang ="ja")
         timestamp 投稿時間: #{toukou.showCreated}
         br
         span #{toukou.body}
-    form(method="post" action="/admin/update/updatesubmit")
+    form(method="post" action="/admin/updatesubmit")
       each toukou in posts
         input(type="hidden" name="updateid" value=toukou.id)
         input.nameform(type="text" name="updatename" value=toukou.name)
