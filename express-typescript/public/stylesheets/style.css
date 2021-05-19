@@ -24,7 +24,6 @@ timestamp {
 
 postbody{
   font-size: 15px;
-  margin-bottom:auto;
 }
 
 textarea{
@@ -34,4 +33,8 @@ textarea{
 
 .nameform{
   width: 500px;
+}
+.posts{
+  margin-bottom: 10px;
+  white-space: pre-wrap;
 }

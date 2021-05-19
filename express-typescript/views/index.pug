@@ -12,7 +12,7 @@ html(lang ="ja")
         button(type="submit") りせっと
     p
     each toukou in posts
-      div 
+      div(class="posts")
         id #{toukou.id}
         name 投稿者: #{toukou.name}
         timestamp 投稿時間: #{toukou.showCreated}
@@ -23,6 +23,7 @@ html(lang ="ja")
             button(type="submit" name="deleteid" value=toukou.id) 削除
           form(method="post" action="/admin/update")
             button(type="submit" name="updateid" value=toukou.id) 編集
+        br
     form(method="post" action="/write")
       input.nameform(type="text" name="postwriter" placeholder="名前")
       br

@@ -3,8 +3,7 @@ import { insert ,selectAll, deletewhereID, selectwhereID,updatewhereID,resetTabl
 //import {login} from './authentication';
 import passport from 'passport';
 import passportLocal from 'passport-local';
-import e from 'express';
-const LocalStrategy = passportLocal.Strategy
+const LocalStrategy = passportLocal.Strategy;
 const router = express.Router();
 //router.use(login.initialize());
 

@@ -1,19 +1,13 @@
-import createError from 'http-errors';
+import createError, { HttpError } from 'http-errors';
 import express from 'express';
 import session from 'express-session';
-import cookieParser from 'cookie-parser';
-import logger from 'morgan';
 
 import { router as indexRouter} from './routes/index';
-import { router as usersRouter }from './routes/users';
 const app = express();
 
 // view engine setup
 app.set('views', 'views');
 app.set('view engine', 'pug');
-
-app.use(logger('dev'));
-app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use(session({
@@ -21,25 +15,47 @@ app.use(session({
   resave: true,
   saveUninitialized: false,
 }));
+// catch 404 and forward to error handler
 
 app.use('/', indexRouter);
-app.use('/', usersRouter);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+app.use(function(err:HttpError, req:express.Request, res:express.Response, next:express.NextFunction) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  //res.locals.error = req.app.get('env') === 'development' ? err : {};
+  // render the error page
+
+  res.status(err.status || 500);
+  console.log(err.status);
+  console.log(err);
+  res.render('error', {err});
+});
+
 // error handler
 //TODO
 //引数の型がAnyになる問題が解決できないのでいったんコメントアウトして先に進める
-/*app.use(function(err,req,res) {
+/*const errHandler = function(err:Error,req:Request,res:Response,next:NextFunction){
+  res.status
+};*/
+
+//app.use(errHandler(err:Error,req:Request,res:Response,next:NextFunction));
+/*
+app.use(function(err:express.error.HttpError,req:express.Request,res:express.Response,next:NextFunction) {
   // set locals, only providing error in development
+  if (res.headersSent){
+    return next(err)
+  };
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
+  // render the error pages
   res.status(err.status || 500);
-  res.render('error');
-});*/
+  console.log(res.status);
+  console.log(err);
+  res.render('error', {err});
+});
 
+*/
 module.exports = app;
