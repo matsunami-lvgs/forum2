@@ -1,7 +1,7 @@
 import createError, { HttpError } from 'http-errors';
 import express from 'express';
 import session from 'express-session';
-
+import connect_pg_simple from 'connect-pg-simple';
 import { router as indexRouter} from './routes/index';
 const app = express();
 
@@ -11,24 +11,27 @@ app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
 app.use(session({
+  store: new (connect_pg_simple(session))({
+    conString:'postgres://postgres:hoge@localhost/forum'
+  }),
   secret: 'keyboard cat',
-  resave: true,
+  resave: false,
   saveUninitialized: false,
+  cookie: {maxAge: 60 * 1000}
 }));
+
 // catch 404 and forward to error handler
-
-app.use('/', indexRouter);
-
 app.use(function(req, res, next) {
   next(createError(404));
 });
+app.use('/', indexRouter);
+
 
 app.use(function(err:HttpError, req:express.Request, res:express.Response, next:express.NextFunction) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   //res.locals.error = req.app.get('env') === 'development' ? err : {};
   // render the error page
-
   res.status(err.status || 500);
   console.log(err.status);
   console.log(err);

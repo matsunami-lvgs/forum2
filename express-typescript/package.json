@@ -6,9 +6,11 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@types/connect-pg-simple": "^4.2.2",
     "@types/express-session": "^1.17.3",
     "@types/passport": "^1.0.6",
     "@types/validator": "^13.1.3",
+    "connect-pg-simple": "^6.2.1",
     "cookie-parser": "~1.4.4",
     "dayjs": "^1.10.4",
     "debug": "~2.6.9",

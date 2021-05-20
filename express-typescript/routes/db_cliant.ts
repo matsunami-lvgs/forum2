@@ -14,7 +14,6 @@ class Posts extends Model {
   public updatedAt!:Date;
 }
 
-
 Posts.init(
   {
     id: {

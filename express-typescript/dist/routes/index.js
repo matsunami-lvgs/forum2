@@ -45,7 +45,7 @@ passport_1.default.use(new LocalStrategy((username, password, done) => {
         return done(null, false);
     }
     else {
-        console.log('sucess');
+        console.log('login sucess');
         return done(null, { username: username, password: password });
     }
 }));

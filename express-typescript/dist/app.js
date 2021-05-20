@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const http_errors_1 = __importDefault(require("http-errors"));
 const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
+const connect_pg_simple_1 = __importDefault(require("connect-pg-simple"));
 const index_1 = require("./routes/index");
 const app = express_1.default();
 // view engine setup
@@ -14,15 +14,16 @@ app.set('view engine', 'pug');
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.static('public'));
 app.use(express_session_1.default({
+    store: new (connect_pg_simple_1.default(express_session_1.default))({
+        conString: 'postgres://postgres:hoge@localhost/forum'
+    }),
     secret: 'keyboard cat',
-    resave: true,
+    resave: false,
     saveUninitialized: false,
+    cookie: { maxAge: 60 * 1000 }
 }));
 // catch 404 and forward to error handler
 app.use('/', index_1.router);
-app.use(function (req, res, next) {
-    next(http_errors_1.default(404));
-});
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;

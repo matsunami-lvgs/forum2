@@ -31,7 +31,7 @@ passport.use(new LocalStrategy(
       console.log('password failue');
       return done(null,false);
     } else{
-      console.log('sucess');
+      console.log('login sucess');
       return done (null,{username: username, password: password});
     }
   }
