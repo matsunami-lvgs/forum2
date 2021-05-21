@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const http_errors_1 = __importDefault(require("http-errors"));
 const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
 const connect_pg_simple_1 = __importDefault(require("connect-pg-simple"));
@@ -22,8 +23,11 @@ app.use(express_session_1.default({
     saveUninitialized: false,
     cookie: { maxAge: 60 * 1000 }
 }));
-// catch 404 and forward to error handler
 app.use('/', index_1.router);
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+    next(http_errors_1.default(404));
+});
 app.use(function (err, req, res, next) {
     // set locals, only providing error in development
     res.locals.message = err.message;
