@@ -53,12 +53,10 @@ router.use(passport.session());
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  const fuga = await selectAll();
-  res.render('index', {
-    title: 'けいじばん',
-    posts: fuga,
-    isAdmin: false,
-  }); 
+  const fuga:Object = await selectAll();
+  console.log (new Date());
+  //フロントエンドの実装につき一部Json化
+  res.json(Object.values(fuga)); 
 });
 
 router.post('/write',async function(req,res,next){

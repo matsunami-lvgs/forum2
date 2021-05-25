@@ -8,12 +8,18 @@ const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
 const connect_pg_simple_1 = __importDefault(require("connect-pg-simple"));
 const index_1 = require("./routes/index");
+const cors_1 = __importDefault(require("cors"));
 const app = express_1.default();
 // view engine setup
 app.set('views', 'views');
 app.set('view engine', 'pug');
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(express_1.default.static('public'));
+//フロントエンドサーバのみCORSを許可
+app.use(cors_1.default({
+    origin: 'http://localhost:8080',
+    credentials: true
+}));
 app.use(express_session_1.default({
     store: new (connect_pg_simple_1.default(express_session_1.default))({
         conString: 'postgres://postgres:hoge@localhost/forum'

@@ -3,6 +3,7 @@ import express from 'express';
 import session from 'express-session';
 import connect_pg_simple from 'connect-pg-simple';
 import { router as indexRouter} from './routes/index';
+import cors from 'cors';
 const app = express();
 
 // view engine setup
@@ -10,6 +11,11 @@ app.set('views', 'views');
 app.set('view engine', 'pug');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
+//フロントエンドサーバのみCORSを許可
+app.use(cors({
+  origin:'http://localhost:8080',
+  credentials: true
+}));
 app.use(session({
   store: new (connect_pg_simple(session))({
     conString:'postgres://postgres:hoge@localhost/forum'

@@ -63,11 +63,9 @@ router.use(passport_1.default.session());
 router.get('/', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const fuga = yield db_cliant_1.selectAll();
-        res.render('index', {
-            title: 'けいじばん',
-            posts: fuga,
-            isAdmin: false,
-        });
+        console.log(new Date());
+        //フロントエンドの実装につき一部Json化
+        res.json(Object.values(fuga));
     });
 });
 router.post('/write', function (req, res, next) {

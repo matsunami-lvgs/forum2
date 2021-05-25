@@ -65,6 +65,7 @@ exports.create = create;
 const selectAll = function () {
     return __awaiter(this, void 0, void 0, function* () {
         const hoge = yield Posts.findAll({
+            attributes: ['id', 'name', 'createdAt', 'body'],
             order: [['id', 'ASC']]
         });
         return (hoge);
@@ -74,6 +75,7 @@ exports.selectAll = selectAll;
 const selectwhereID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         const hoge = yield Posts.findAll({
+            attributes: ['id', 'name', 'createdAt', 'body'],
             where: {
                 id: postsID
             }

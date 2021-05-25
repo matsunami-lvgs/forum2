@@ -1,5 +1,6 @@
 import { Sequelize , Model, DataTypes } from 'sequelize';
 import dayjs from 'dayjs';
+import { CreatedAt } from 'sequelize-typescript';
 const sequelize = new Sequelize(
   'postgres://postgres:hoge@localhost/forum'
 );
@@ -60,6 +61,7 @@ const create = async function () {
 
 const selectAll  =async function ():Promise<object>{
   const hoge = await Posts.findAll({
+    attributes:['id', 'name', 'createdAt', 'body'],
     order:[['id','ASC']]
   });
   return(hoge);
@@ -67,6 +69,7 @@ const selectAll  =async function ():Promise<object>{
 
 const selectwhereID = async function (postsID:number):Promise<object>{
   const hoge = await Posts.findAll({
+    attributes:['id', 'name', 'createdAt', 'body'],
     where:{
       id:postsID
     }
