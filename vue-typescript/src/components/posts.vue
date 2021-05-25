@@ -4,7 +4,12 @@
       <p>
         <id>{{kakikomi.id}}</id>
         <name>投稿者: {{kakikomi.name}}</name> 
-        <time>投稿時間 {{kakikomi.createdAt}}</time><br>
+        <time>投稿時間 {{kakikomi.createdAt}}</time>
+        <adminonly v-if="isAdmin===true">
+          <button type="submit">削除</button>
+          <button type="submit">編集</button>
+        </adminonly>
+        <br>
         <postbody>{{kakikomi.body}}</postbody>
       </p>
     </div>
@@ -19,7 +24,10 @@ import axios from 'axios';
 export default defineComponent ({
   name: 'Posts',
   data() {
-    return {kakikomi:Object};
+    return {
+      kakikomi:Object,
+      isAdmin:true
+    };
   },
   async mounted() {
     const items= await axios.get('http://localhost:5000/');
