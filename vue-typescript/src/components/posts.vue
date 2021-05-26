@@ -26,14 +26,16 @@ export default defineComponent ({
   data() {
     return {
       kakikomi:Object,
-      isAdmin:true
+      isAdmin:false
     };
   },
   async mounted() {
     const items= await axios.get('http://localhost:5000/');
     console.log(items)
-    console.log(items.data);
     this.kakikomi=items.data;
+    //const checkLogin = await axios.get('http://localhost:5000/checklogin');
+    //console.log(checkLogin);
+    this.isAdmin = true;
   },
 });
 

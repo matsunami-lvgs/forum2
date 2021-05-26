@@ -13,7 +13,8 @@ const app = express_1.default();
 // view engine setup
 app.set('views', 'views');
 app.set('view engine', 'pug');
-app.use(express_1.default.urlencoded({ extended: false }));
+app.use(express_1.default.json());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static('public'));
 //フロントエンドサーバのみCORSを許可
 app.use(cors_1.default({

@@ -54,15 +54,51 @@ router.use(passport.session());
 /* GET home page. */
 router.get('/', async function(req, res, next) {
   const fuga:Object = await selectAll();
-  console.log (new Date());
+  console.log (`send posts ${new Date()}`);
   //フロントエンドの実装につき一部Json化
   res.json(Object.values(fuga)); 
 });
 
+router.get('/checklogin', async function(req, res, next) {
+  console.log (`check admin : ${req.isAuthenticated()} ${new Date()}`);
+  if (req.isAuthenticated()){
+    res.status(200);
+    res.json();
+  }else{
+    //試しにどちらも200を返してみる、認証系の実装時に401に戻す
+    res.status(200);
+    res.json();
+  }
+});
+
 router.post('/write',async function(req,res,next){
-  console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${Date.toLocaleString()}`);
+  console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
+  console.log(req);
   await insert(req.body.postwriter,req.body.postbody);
-  res.redirect('/');
+  res.json();;
+});
+
+router.post('/login',
+  passport.authenticate('local',{
+    failureRedirect : '/checklogin',
+    successRedirect: '/checklogin',
+  }),
+);
+
+router.get('/logout',function (req,res,next){
+  req.logout();
+  res.render('returnindex',{
+    title: 'ログアウト',
+    caption: 'ログアウトしました'
+  });
+});
+
+
+router.get('/failue',function (req,res,next){
+  res.render('returnindex',{
+    title: 'ログイン失敗',
+    caption: '再度ログインしてください'
+  });
 });
 
 router.get('/admin', async function(req, res, next) {

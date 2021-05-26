@@ -63,16 +63,49 @@ router.use(passport_1.default.session());
 router.get('/', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const fuga = yield db_cliant_1.selectAll();
-        console.log(new Date());
+        console.log(`send posts ${new Date()}`);
         //フロントエンドの実装につき一部Json化
         res.json(Object.values(fuga));
     });
 });
+router.get('/checklogin', function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log(`check admin : ${req.isAuthenticated()} ${new Date()}`);
+        if (req.isAuthenticated()) {
+            res.status(200);
+            res.json();
+        }
+        else {
+            //試しにどちらも200を返してみる、認証系の実装時に401に戻す
+            res.status(200);
+            res.json();
+        }
+    });
+});
 router.post('/write', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${Date.toLocaleString()}`);
+        console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
+        console.log(req);
         yield db_cliant_1.insert(req.body.postwriter, req.body.postbody);
-        res.redirect('/');
+        res.json();
+        ;
+    });
+});
+router.post('/login', passport_1.default.authenticate('local', {
+    failureRedirect: '/checklogin',
+    successRedirect: '/checklogin',
+}));
+router.get('/logout', function (req, res, next) {
+    req.logout();
+    res.render('returnindex', {
+        title: 'ログアウト',
+        caption: 'ログアウトしました'
+    });
+});
+router.get('/failue', function (req, res, next) {
+    res.render('returnindex', {
+        title: 'ログイン失敗',
+        caption: '再度ログインしてください'
     });
 });
 router.get('/admin', function (req, res, next) {
