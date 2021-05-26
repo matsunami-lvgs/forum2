@@ -1,8 +1,8 @@
 <template>
-  <Login />
+  <Login v-on:reload="reload()"/>
   <h1>{{title}}</h1>
-  <Posts />
-  <PostingForm />
+  <Posts :key="resetKey" v-on:reload="reload()"/>
+  <PostingForm v-on:reload="reload()" />
 </template>
 
 <script lang="ts">
@@ -20,7 +20,17 @@ export default defineComponent({
     Posts,
     PostingForm,
   },
-  data(){return{title:'けいじばん'}},
+  data(){
+    return{
+      title:'けいじばん',
+      resetKey: 0
+    }
+  },
+  methods:{
+    reload(){
+      this.resetKey++
+    }
+  }
 });
 </script>
 

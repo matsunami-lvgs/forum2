@@ -145,31 +145,29 @@ router.get('/logout',function (req,res,next){
 
 //TODO
 router.post('/admin/update', async function(req, res, next){
-  redilectNotAuth(req,res,next);
+  //redilectNotAuth(req,res,next);
   console.log('アップデートID')
   console.log(req.body.updateid);
   const fuga = await selectwhereID(req.body.updateid);
   console.log(fuga);
-  res.render('update',{
-    posts: fuga
-  });
+  res.json();
 });
 
 router.post('/admin/updatesubmit', async function(req, res, next){
-  redilectNotAuth(req,res,next);
-  console.log('アップデート本文')
-  console.log(req.body.updateid,req.body.updatebname,req.body.updatebody);
-  const fuga = await updatewhereID(req.body.updateid,req.body.updatename,req.body.updatebody);
+  //redilectNotAuth(req,res,next);
+  console.log('アップデート本文');
+  console.log(req.body.updateid,req.body.updatebody);
+  const fuga = await updatewhereID(req.body.updateid,req.body.updatebody);
   console.log(fuga);
-  res.redirect('/admin');
+  res.json();
 });
 
 //TODO
 router.post('/admin/delete',async function(req,res,next){
-  redilectNotAuth(req,res,next);
+  //redilectNotAuth(req,res,next);
   console.log(`[ID]:${req.body.deleteid}`);
   await deletewhereID(req.body.deleteid);
-  res.redirect('/admin');
+  res.json();
 });
 
 router.post('/admin/reset',async function(req,res,next){

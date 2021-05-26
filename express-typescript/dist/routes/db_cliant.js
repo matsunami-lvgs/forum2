@@ -94,9 +94,9 @@ const deletewhereID = function (postsID) {
     });
 };
 exports.deletewhereID = deletewhereID;
-const updatewhereID = function (postID, postName, postBody) {
+const updatewhereID = function (postID, postBody) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Posts.update({ name: postName, body: postBody }, {
+        yield Posts.update({ body: postBody }, {
             where: {
                 id: postID
             }

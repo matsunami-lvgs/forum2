@@ -148,33 +148,31 @@ router.get('/logout', function (req, res, next) {
 //TODO
 router.post('/admin/update', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        redilectNotAuth(req, res, next);
+        //redilectNotAuth(req,res,next);
         console.log('アップデートID');
         console.log(req.body.updateid);
         const fuga = yield db_cliant_1.selectwhereID(req.body.updateid);
         console.log(fuga);
-        res.render('update', {
-            posts: fuga
-        });
+        res.json();
     });
 });
 router.post('/admin/updatesubmit', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        redilectNotAuth(req, res, next);
+        //redilectNotAuth(req,res,next);
         console.log('アップデート本文');
-        console.log(req.body.updateid, req.body.updatebname, req.body.updatebody);
-        const fuga = yield db_cliant_1.updatewhereID(req.body.updateid, req.body.updatename, req.body.updatebody);
+        console.log(req.body.updateid, req.body.updatebody);
+        const fuga = yield db_cliant_1.updatewhereID(req.body.updateid, req.body.updatebody);
         console.log(fuga);
-        res.redirect('/admin');
+        res.json();
     });
 });
 //TODO
 router.post('/admin/delete', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        redilectNotAuth(req, res, next);
+        //redilectNotAuth(req,res,next);
         console.log(`[ID]:${req.body.deleteid}`);
         yield db_cliant_1.deletewhereID(req.body.deleteid);
-        res.redirect('/admin');
+        res.json();
     });
 });
 router.post('/admin/reset', function (req, res, next) {

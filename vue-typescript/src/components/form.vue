@@ -12,7 +12,6 @@
 import { Options, Vue } from 'vue-class-component';
 import { defineComponent } from 'vue';
 import axios from 'axios';
-import showposts from './posts.vue';
 export default defineComponent({
   name: 'PostingForm',
   data (){
@@ -23,11 +22,6 @@ export default defineComponent({
   },
   methods:{
     sendPost:async function(){
-      /*const data = {
-        {postwriter: pwriter},
-        {postbody: pbody}
-      };
-      console.log(data);*/
       var params = new URLSearchParams()
       params.append('postwriter', this.pwriter);
       params.append('postbody', this.pbody);
@@ -45,9 +39,9 @@ export default defineComponent({
         postwriter: this.pwriter,
         postbody: this.pbody
       },{
-      headers: {'Content-Type': 'application/json'},
-      })
-      showposts.methods;
+        headers: {'Content-Type': 'application/json'},
+      });
+      this.$emit('reload')
     }
   },
 })

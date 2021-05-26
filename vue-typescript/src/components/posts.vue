@@ -5,12 +5,19 @@
         <id>{{kakikomi.id}}</id>
         <name>投稿者: {{kakikomi.name}}</name> 
         <time>投稿時間 {{kakikomi.createdAt}}</time>
-        <adminonly v-if="isAdmin===true">
-          <button type="submit">削除</button>
-          <button type="submit">編集</button>
-        </adminonly>
-        <br>
-        <postbody>{{kakikomi.body}}</postbody>
+        <admin v-if="isAdmin===true">
+          <button type="submit" @click="deletePost(kakikomi.id,kakikomi.body)">削除</button>
+          <button type="submit" @click="updateSelect(kakikomi.id)">編集</button>
+          <br>
+          <postbody>{{kakikomi.body}}</postbody>
+
+          <update v-if="isUpdate===kakikomi.id">
+            <br>
+            <textarea id="ubody">{{kakikomi.body}}</textarea>
+            <br>
+            <button type="submit" @click="updatePost(kakikomi.id,ubody)">編集確定</button>
+          </update>
+        </admin>
       </p>
     </div>
   </ul>
@@ -18,7 +25,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { defineComponent } from 'vue';
+import { defineComponent ,} from 'vue';
 import axios from 'axios';
 
 export default defineComponent ({
@@ -26,7 +33,8 @@ export default defineComponent ({
   data() {
     return {
       kakikomi:Object,
-      isAdmin:false
+      isAdmin:true,
+      isUpdate:0
     };
   },
   async mounted() {
@@ -35,8 +43,50 @@ export default defineComponent ({
     this.kakikomi=items.data;
     //const checkLogin = await axios.get('http://localhost:5000/checklogin');
     //console.log(checkLogin);
-    this.isAdmin = true;
   },
+  methods:{
+    async getPostsData(){
+    const items= await axios.get('http://localhost:5000/');
+    console.log(items)
+    this.kakikomi=items.data;
+    return(true);
+    //const checkLogin = await axios.get('http://localhost:5000/checklogin');
+    //console.log(checkLogin);
+    },
+    async deletePost(postid:number,postbody:string){
+      if(confirm(`この書き込みを削除しますか？\n${postid}: ${postbody}`)){
+        //
+        await axios.post('http://localhost:5000/admin/delete',{
+          deleteid: postid
+        },{
+          headers: {'Content-Type': 'application/json'},
+        });
+        await this.getPostsData();
+      }else{
+        //何もしない
+      };
+    },
+    updateSelect(id:number){
+      if(this.isUpdate===id){
+        this.isUpdate=0
+      }else{
+        this.isUpdate=id;
+
+      }
+    },
+    async updatePost(id:number,post:string){
+      console.log(id);
+      console.log(post);
+      await axios.post('http://localhost:5000/admin/updatesubmit',{
+        updateid: id,
+        updatebody: post
+      },{
+      headers: {'Content-Type': 'application/json'},
+      });
+      this.$emit('reload')
+    },
+  }
+
 });
 
 </script>

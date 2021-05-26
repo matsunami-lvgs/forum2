@@ -85,8 +85,8 @@ const deletewhereID = async function (postsID:number) {
   });
 };
 
-const updatewhereID = async function (postID:number,postName:string,postBody:string) {
-  await Posts.update({name:postName,body:postBody},{
+const updatewhereID = async function (postID:number,postBody:string) {
+  await Posts.update({body:postBody},{
     where: {
       id : postID
     }
