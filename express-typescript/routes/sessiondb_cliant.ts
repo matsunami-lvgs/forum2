@@ -1,7 +1,8 @@
 import { Sequelize , Model, DataTypes } from 'sequelize';
 import crypto from 'crypto-js'
 const sequelize = new Sequelize(
-  'postgres://postgres:hoge@localhost/forum'
+  'postgres://postgres:hoge@localhost/forum',
+  {logging:console.log}
 );
 const table_name :string= 'session' 
 
@@ -43,17 +44,23 @@ Session.init(
 //ハッシュ生成＆埋め込み
 //生成したハッシュを返す
 const addhash = async function (postsid:string) {
-  const hash:string = "'" + (await JSON.stringify(crypto.SHA256(postsid))) +"'";
+  //まずはエスケープ等を意識せずに使ってみる
+  const hash:string = await JSON.stringify(crypto.SHA256(postsid));
   console.log(hash);
+  console.log(postsid);
   console.log(typeof(hash));
   //const Qpostid = "'"+postsid+"'";
   //console.log(Qpostid);
   //postid = 
+  let num = await Session.count();
+  console.log(num);
   await Session.update({hashid: hash},{
     where: {
       sid : postsid
     }
   });
+  num = await Session.count();
+  console.log(num);
   return hash;
 };
 

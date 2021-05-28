@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletesession = exports.selecthash = exports.addhash = void 0;
 const sequelize_1 = require("sequelize");
 const crypto_js_1 = __importDefault(require("crypto-js"));
-const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum');
+const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum', { logging: console.log });
 const table_name = 'session';
 class Session extends sequelize_1.Model {
 }
@@ -45,21 +45,33 @@ Session.init({
 //生成したハッシュを返す
 const addhash = function (postsid) {
     return __awaiter(this, void 0, void 0, function* () {
-        const hash = "'" + (yield JSON.stringify(crypto_js_1.default.SHA256(postsid))) + "'";
+        //まずはエスケープ等を意識せずに使ってみる
+        const hash = yield JSON.stringify(crypto_js_1.default.SHA256(postsid));
         console.log(hash);
+        console.log(postsid);
         console.log(typeof (hash));
         //const Qpostid = "'"+postsid+"'";
         //console.log(Qpostid);
         //postid = 
+        let num = yield Session.count();
+        console.log(num);
+        yield mySleep(5000);
         yield Session.update({ hashid: hash }, {
             where: {
                 sid: postsid
             }
         });
+        num = yield Session.count();
+        console.log(num);
         return hash;
     });
 };
 exports.addhash = addhash;
+function mySleep(time) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, time);
+    });
+}
 //突合
 const selecthash = function (hash) {
     return __awaiter(this, void 0, void 0, function* () {

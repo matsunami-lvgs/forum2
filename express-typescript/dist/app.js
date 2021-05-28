@@ -26,7 +26,7 @@ app.use(express_session_1.default({
         conString: 'postgres://postgres:hoge@localhost/forum'
     }),
     secret: 'keyboard cat',
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     //寿命は10分
     cookie: { maxAge: 10 * 60 * 1000 }

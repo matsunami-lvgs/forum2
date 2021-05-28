@@ -84,6 +84,11 @@ router.post('/write',async function(req,res,next){
   res.json();
 });
 
+//ここを抜けて初めて登録が走るのでは？？という
+/***
+ * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
+ * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
+ */
 router.post('/login',
   passport.authenticate('local'),
     async function (req,res,next){
