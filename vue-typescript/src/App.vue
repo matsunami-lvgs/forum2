@@ -1,7 +1,7 @@
 <template>
   <Login v-on:reload="reload()"/>
   <h1>{{title}}</h1>
-  <Posts :key="resetKey" v-on:reload="reload()"/>
+  <Posts v-on:reload="reload()"/>
   <PostingForm v-on:reload="reload()" />
 </template>
 
@@ -27,9 +27,6 @@ export default defineComponent({
     }
   },
   methods:{
-    reload(){
-      this.resetKey++
-    }
   }
 });
 </script>

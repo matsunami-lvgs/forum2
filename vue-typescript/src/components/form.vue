@@ -22,6 +22,7 @@ export default defineComponent({
   },
   methods:{
     sendPost:async function(){
+      /*
       var params = new URLSearchParams()
       params.append('postwriter', this.pwriter);
       params.append('postbody', this.pbody);
@@ -30,7 +31,7 @@ export default defineComponent({
         postbody: this.pbody
       }
       console.log(datas);
-      console.log(params)
+      console.log(params)*/
       axios.interceptors.request.use(request => {
         console.log('Starting Request: ', request)
         return request
@@ -41,8 +42,8 @@ export default defineComponent({
       },{
         headers: {'Content-Type': 'application/json'},
       });
-      this.$emit('reload')
-    }
+      //this.$emit('reload')
+    },
   },
 })
 </script>

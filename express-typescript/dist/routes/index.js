@@ -18,35 +18,33 @@ const db_cliant_1 = require("./db_cliant");
 //import {login} from './authentication';
 const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = __importDefault(require("passport-local"));
+const sessiondb_cliant_1 = require("./sessiondb_cliant");
 const LocalStrategy = passport_local_1.default.Strategy;
 const router = express_1.default.Router();
 exports.router = router;
 //router.use(login.initialize());
+//ここから認証の設定
 const admin = {
     username: 'kai',
     password: 'kai'
 };
 const redilectNotAuth = function (req, res, next) {
     if (req.isAuthenticated()) {
-        return;
+        return (true);
     }
     else {
-        return res.redirect('failue');
+        return (false);
     }
     ;
 };
 passport_1.default.use(new LocalStrategy((username, password, done) => {
-    if (username !== admin.username) {
-        console.log('name failue');
-        return done(null, false);
-    }
-    else if (password !== admin.password) {
-        console.log('password failue');
-        return done(null, false);
-    }
-    else {
-        console.log('login sucess');
+    if (username === admin.username && password === admin.password) {
+        console.log('sucess');
         return done(null, { username: username, password: password });
+    }
+    else if (username !== admin.username || password !== admin.password) {
+        console.log('failue');
+        return done(null, false);
     }
 }));
 passport_1.default.serializeUser((user, done) => {
@@ -59,11 +57,15 @@ passport_1.default.deserializeUser((user, done) => {
 });
 router.use(passport_1.default.initialize());
 router.use(passport_1.default.session());
+//ここまで認証の設定
 /* GET home page. */
 router.get('/', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const fuga = yield db_cliant_1.selectAll();
         console.log(`send posts ${new Date()}`);
+        console.log(req.headers);
+        console.log(req.user);
+        console.log(req.isAuthenticated());
         //フロントエンドの実装につき一部Json化
         res.json(Object.values(fuga));
     });
@@ -71,13 +73,13 @@ router.get('/', function (req, res, next) {
 router.get('/checklogin', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`check admin : ${req.isAuthenticated()} ${new Date()}`);
-        if (req.isAuthenticated()) {
+        if (yield req.isAuthenticated()) {
             res.status(200);
             res.json();
         }
         else {
             //試しにどちらも200を返してみる、認証系の実装時に401に戻す
-            res.status(200);
+            res.status(401);
             res.json();
         }
     });
@@ -85,77 +87,57 @@ router.get('/checklogin', function (req, res, next) {
 router.post('/write', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
-        console.log(req);
+        console.log(req.body);
         yield db_cliant_1.insert(req.body.postwriter, req.body.postbody);
         res.json();
-        ;
     });
 });
-router.post('/login', passport_1.default.authenticate('local', {
-    failureRedirect: '/checklogin',
-    successRedirect: '/checklogin',
-}));
+router.post('/login', passport_1.default.authenticate('local'), function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        console.log('どないや');
+        //console.log(req)
+        console.log(req.sessionID);
+        const tokenhash = yield sessiondb_cliant_1.addhash(req.sessionID);
+        console.log(tokenhash);
+        res.json({ token: tokenhash });
+    });
+});
+/*
+async function(req,res,next){
+  await passport.authenticate('local'),(req,res)=>{
+
+  }
+  const hoge:boolean=await redilectNotAuth(req,res,next)
+  if(hoge){
+    console.log('seikou');
+    res.status(200);
+    res.json();
+  }else{
+    console.log('sippai');
+    res.status(401);
+    res.json()
+  }
+});*/
 router.get('/logout', function (req, res, next) {
     req.logout();
-    res.render('returnindex', {
-        title: 'ログアウト',
-        caption: 'ログアウトしました'
-    });
+    res.json();
 });
-router.get('/failue', function (req, res, next) {
-    res.render('returnindex', {
-        title: 'ログイン失敗',
-        caption: '再度ログインしてください'
-    });
-});
-router.get('/admin', function (req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const fuga = yield db_cliant_1.selectAll();
-        console.log('req.user');
-        console.log(req.user);
-        console.log('req.session');
-        console.log(req.session);
-        console.log('req.isAuthenticated');
-        console.table(req.isAuthenticated());
-        redilectNotAuth(req, res, next);
-        res.render('index', {
-            title: 'けいじばん（管理用）',
-            posts: fuga,
-            isAdmin: true,
-        });
-    });
-});
-router.post('/login', passport_1.default.authenticate('local', {
-    failureRedirect: '/failue',
-    successRedirect: '/admin',
-}));
-router.get('/failue', function (req, res, next) {
-    res.render('returnindex', {
-        title: 'ログイン失敗',
-        caption: '再度ログインしてください'
-    });
-});
-router.get('/login', function (req, res, next) {
-    res.render('login');
-});
-router.get('/logout', function (req, res, next) {
-    req.logout();
-    res.render('returnindex', {
-        title: 'ログアウト',
-        caption: 'ログアウトしました'
-    });
-});
-//TODO
-router.post('/admin/update', function (req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        //redilectNotAuth(req,res,next);
-        console.log('アップデートID');
-        console.log(req.body.updateid);
-        const fuga = yield db_cliant_1.selectwhereID(req.body.updateid);
-        console.log(fuga);
-        res.json();
-    });
-});
+/*¥l
+router.get('/admin', async function(req, res, next) {
+  const fuga = await selectAll();
+  console.log('req.user');
+  console.log(req.user);
+  console.log('req.session');
+  console.log(req.session);
+  console.log('req.isAuthenticated');
+  console.table(req.isAuthenticated());
+  redilectNotAuth(req,res,next);
+  res.render('index', {
+    title: 'けいじばん（管理用）',
+    posts: fuga,
+    isAdmin: true,
+  });
+});*/
 router.post('/admin/updatesubmit', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         //redilectNotAuth(req,res,next);
@@ -178,6 +160,6 @@ router.post('/admin/delete', function (req, res, next) {
 router.post('/admin/reset', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         yield db_cliant_1.resetTable();
-        res.redirect('/admin');
+        res.json();
     });
 });

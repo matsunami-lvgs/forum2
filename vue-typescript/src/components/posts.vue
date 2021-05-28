@@ -7,15 +7,15 @@
         <time>投稿時間 {{kakikomi.createdAt}}</time>
         <admin v-if="isAdmin===true">
           <button type="submit" @click="deletePost(kakikomi.id,kakikomi.body)">削除</button>
-          <button type="submit" @click="updateSelect(kakikomi.id)">編集</button>
+          <button type="submit" @click="updateSelect(kakikomi.id,kakikomi.body)">編集</button>
           <br>
-          <postbody>{{kakikomi.body}}</postbody>
+          <postbody v-model="kbody">{{kakikomi.body}}</postbody>
 
           <update v-if="isUpdate===kakikomi.id">
             <br>
-            <textarea id="ubody">{{kakikomi.body}}</textarea>
+            <textarea v-model="ubody"></textarea>
             <br>
-            <button type="submit" @click="updatePost(kakikomi.id,ubody)">編集確定</button>
+            <button type="submit" @click="updatePost(kakikomi.id)">編集確定</button>
           </update>
         </admin>
       </p>
@@ -34,12 +34,14 @@ export default defineComponent ({
     return {
       kakikomi:Object,
       isAdmin:true,
-      isUpdate:0
+      isUpdate:0,
+      ubody:'',
+      kbody:''
     };
   },
   async mounted() {
     const items= await axios.get('http://localhost:5000/');
-    console.log(items)
+    console.log(items);
     this.kakikomi=items.data;
     //const checkLogin = await axios.get('http://localhost:5000/checklogin');
     //console.log(checkLogin);
@@ -66,15 +68,17 @@ export default defineComponent ({
         //何もしない
       };
     },
-    updateSelect(id:number){
+    updateSelect(id:number,name:string){
       if(this.isUpdate===id){
         this.isUpdate=0
       }else{
         this.isUpdate=id;
+        this.ubody=name
 
       }
     },
-    async updatePost(id:number,post:string){
+    async updatePost(id:number){
+      const post:string = this.ubody;
       console.log(id);
       console.log(post);
       await axios.post('http://localhost:5000/admin/updatesubmit',{

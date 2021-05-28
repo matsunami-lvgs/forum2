@@ -24,7 +24,8 @@ app.use(session({
   secret: 'keyboard cat',
   resave: false,
   saveUninitialized: false,
-  cookie: {maxAge: 60 * 1000}
+  //寿命は10分
+  cookie: {maxAge: 10 * 60 * 1000}
 }));
 
 app.use('/', indexRouter);
@@ -44,7 +45,7 @@ app.use(function(err:HttpError, req:express.Request, res:express.Response, next:
   res.status(err.status || 500);
   console.log(err.status);
   console.log(err);
-  res.render('error', {err});
+  res.json(err);
 });
 
 // error handler

@@ -86,6 +86,7 @@ const deletewhereID = async function (postsID:number) {
 };
 
 const updatewhereID = async function (postID:number,postBody:string) {
+  console.log(postBody);
   await Posts.update({body:postBody},{
     where: {
       id : postID
@@ -101,6 +102,8 @@ const formatTimestamp=function(timestamp:Date){
   const formatted:string = dayjs(timestamp).format('YYYY/MM/DD HH:mm:ss.SSS')
   return(formatted);
 };
+
+
 
 export{insert, selectAll, deletewhereID,selectwhereID,updatewhereID,resetTable };
 export{create};
