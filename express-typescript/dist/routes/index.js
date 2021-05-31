@@ -63,9 +63,8 @@ router.get('/', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const fuga = yield db_cliant_1.selectAll();
         console.log(`send posts ${new Date()}`);
-        console.log(req.headers);
-        console.log(req.user);
-        console.log(req.isAuthenticated());
+        console.log(`req.usr: ${req.user}`);
+        console.log(`req.isAuthenticated: ${req.isAuthenticated()}`);
         //フロントエンドの実装につき一部Json化
         res.json(Object.values(fuga));
     });
@@ -92,16 +91,44 @@ router.post('/write', function (req, res, next) {
         res.json();
     });
 });
+//ここを抜けて初めて登録が走るのでは？？という
+/***
+ * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
+ * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
+ */
 router.post('/login', passport_1.default.authenticate('local'), function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log('どないや');
-        //console.log(req)
+        console.log('これでどうだ');
         console.log(req.sessionID);
-        const tokenhash = yield sessiondb_cliant_1.addhash(req.sessionID);
+        console.log(req.isAuthenticated());
+        const tokenhash = yield sessiondb_cliant_1.makehash(req.sessionID);
         console.log(tokenhash);
-        res.json({ token: tokenhash });
+        res.json({ sessionID: tokenhash });
+        next();
     });
 });
+router.post('/login', function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const hoge = yield sessiondb_cliant_1.makehash(req.sessionID);
+        yield sessiondb_cliant_1.updatehash(req.sessionID, hoge);
+        //res.json(hoge);
+        console.log(hoge);
+    });
+});
+/*
+  console.log('これでどうだ');
+  console.log(req.sessionID);
+  console.log(req.isAuthenticated());
+  if (req.sessionID!==null){
+    const tokenhash = await addhash(req.sessionID);
+    console.log(tokenhash);
+    res.json(tokenhash);
+  }else{
+    res.status(401);
+    res.json;
+  }
+});
+*/
 /*
 async function(req,res,next){
   await passport.authenticate('local'),(req,res)=>{

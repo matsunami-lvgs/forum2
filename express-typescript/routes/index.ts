@@ -3,7 +3,8 @@ import { insert ,selectAll, deletewhereID, selectwhereID,updatewhereID,resetTabl
 //import {login} from './authentication';
 import passport from 'passport';
 import passportLocal from 'passport-local';
-import{addhash, selecthash, deletesession} from './sessiondb_cliant';
+import{makehash,updatehash, selecthash, deletesession} from './sessiondb_cliant';
+import { token } from 'morgan';
 
 const LocalStrategy = passportLocal.Strategy;
 const router = express.Router();
@@ -58,9 +59,8 @@ router.use(passport.session());
 router.get('/', async function(req, res, next) {
   const fuga:Object = await selectAll();
   console.log (`send posts ${new Date()}`);
-  console.log(req.headers);
-  console.log(req.user);
-  console.log(req.isAuthenticated());
+  console.log(`req.usr: ${req.user}`);
+  console.log(`req.isAuthenticated: ${req.isAuthenticated()}`);
   //フロントエンドの実装につき一部Json化
   res.json(Object.values(fuga)); 
 });
@@ -91,16 +91,40 @@ router.post('/write',async function(req,res,next){
  */
 router.post('/login',
   passport.authenticate('local'),
-    async function (req,res,next){
-      console.log('どないや');
-      //console.log(req)
-      console.log(req.sessionID);
-      const tokenhash = await addhash(req.sessionID);
-      console.log (tokenhash);
-      res.json({token:tokenhash})
-    }
+  async function(req,res,next){
+    console.log('これでどうだ');
+    console.log(req.sessionID);
+    console.log(req.isAuthenticated());
+    const tokenhash = await makehash(req.sessionID);
+    console.log(tokenhash);
+    res.json({sessionID : tokenhash});
+    next ();
+  }
 );
+router.post('/login',
+  async function(req,res,next){
+    const hoge = await makehash(req.sessionID)
+    await updatehash(req.sessionID,hoge);
+    //res.json(hoge);
+    console.log(hoge);
+  }
+)
 
+
+/*
+  console.log('これでどうだ');
+  console.log(req.sessionID);
+  console.log(req.isAuthenticated());
+  if (req.sessionID!==null){
+    const tokenhash = await addhash(req.sessionID);
+    console.log(tokenhash);
+    res.json(tokenhash);
+  }else{
+    res.status(401);
+    res.json;
+  }
+});
+*/
 
 /*
 async function(req,res,next){

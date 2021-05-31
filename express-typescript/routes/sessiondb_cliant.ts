@@ -1,5 +1,5 @@
 import { Sequelize , Model, DataTypes } from 'sequelize';
-import crypto from 'crypto-js'
+import crypto from 'crypto'
 const sequelize = new Sequelize(
   'postgres://postgres:hoge@localhost/forum',
   {logging:console.log}
@@ -43,9 +43,9 @@ Session.init(
 
 //ハッシュ生成＆埋め込み
 //生成したハッシュを返す
-const addhash = async function (postsid:string) {
+const makehash = async function (postsid:string) {
   //まずはエスケープ等を意識せずに使ってみる
-  const hash:string = await JSON.stringify(crypto.SHA256(postsid));
+  const hash:string = await crypto.createHash('sha256').update(postsid).digest('hex');
   console.log(hash);
   console.log(postsid);
   console.log(typeof(hash));
@@ -54,14 +54,26 @@ const addhash = async function (postsid:string) {
   //postid = 
   let num = await Session.count();
   console.log(num);
+  /*
   await Session.update({hashid: hash},{
     where: {
       sid : postsid
     }
-  });
+  });*/
   num = await Session.count();
   console.log(num);
   return hash;
+};
+
+const updatehash=async function(postid:string,hash:string){
+  console.log('あっぷでーと！');
+  await Session.update({hashid: hash},{
+    where: {
+      sid : postid
+    }
+  })
+  let num = await Session.count();
+  console.log(num)
 };
 
 //突合
@@ -81,4 +93,4 @@ const deletesession= async function (hash:string) {
   });
 };
 
-export{addhash, selecthash, deletesession};
+export {makehash,updatehash, selecthash, deletesession};
