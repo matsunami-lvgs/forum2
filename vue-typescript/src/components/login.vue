@@ -40,7 +40,7 @@ export default defineComponent({
       },{
         headers: {'Content-Type': 'application/json'},
       });
-      console.log(hoge);
+      console.log(hoge.data.sessionID);
       /*.catch(err=>{
         console.log(err)
         return err.response

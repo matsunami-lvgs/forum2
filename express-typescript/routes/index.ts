@@ -97,7 +97,11 @@ router.post('/login',
     console.log(req.isAuthenticated());
     const tokenhash = await makehash(req.sessionID);
     console.log(tokenhash);
-    res.json({sessionID : tokenhash});
+    res.cookie('sessionID',tokenhash,{
+      maxAge: 60000,
+      httpOnly: false
+    })
+    res.json({});
     next ();
   }
 );

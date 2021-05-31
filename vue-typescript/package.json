@@ -12,7 +12,8 @@
     "core-js": "^3.6.5",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
-    "vue-cookies": "^1.7.4"
+    "vue-cookies": "^1.7.4",
+    "vue-cookies-ts": "^1.5.19"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
