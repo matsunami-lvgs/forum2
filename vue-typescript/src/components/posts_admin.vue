@@ -5,8 +5,17 @@
         <id>{{kakikomi.id}}</id>
         <name>投稿者: {{kakikomi.name}}</name> 
         <time>投稿時間 {{kakikomi.createdAt}}</time>
+        <button type="submit" @click="deletePost(kakikomi.id,kakikomi.body)">削除</button>
+        <button type="submit" @click="updateSelect(kakikomi.id,kakikomi.body)">編集</button>
+        <br>
+        <postbody v-model="kbody">{{kakikomi.body}}</postbody>
+
+        <update v-if="isUpdate===kakikomi.id">
           <br>
-          <postbody v-model="kbody">{{kakikomi.body}}</postbody>
+          <textarea v-model="ubody"></textarea>
+          <br>
+          <button type="submit" @click="updatePost(kakikomi.id)">編集確定</button>
+        </update>
       </p>
     </div>
   </ul>
@@ -18,18 +27,10 @@ import { defineComponent ,} from 'vue';
 import axios from 'axios';
 
 export default defineComponent ({
-  name: 'Posts',
-  props:{
-    isLogin:{
-      type:Boolean,
-      default:false,
-      required: true
-    }
-  },
+  name: 'PostsAdmin',
   data() {
     return {
       kakikomi:Object,
-      isAdmin:true,
       isUpdate:0,
       ubody:'',
       kbody:''
@@ -43,7 +44,6 @@ export default defineComponent ({
     //console.log(checkLogin);
   },
   methods:{
-    /*
     async getPostsData(){
     const items= await axios.get('http://localhost:5000/');
     console.log(items)
@@ -78,7 +78,7 @@ export default defineComponent ({
       const post:string = this.ubody;
       console.log(id);
       console.log(post);
-      //ここでログインチェックを行う
+      //サーバーがわにハッシュを渡して向こうで処理する、401で帰ってきたらなんか見せる
       await axios.post('http://localhost:5000/admin/updatesubmit',{
         updateid: id,
         updatebody: post
@@ -86,7 +86,7 @@ export default defineComponent ({
       headers: {'Content-Type': 'application/json'},
       });
       this.$emit('reload')
-    },*/
+    },
   }
 
 });

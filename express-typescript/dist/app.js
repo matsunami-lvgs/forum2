@@ -9,6 +9,7 @@ const express_session_1 = __importDefault(require("express-session"));
 const connect_pg_simple_1 = __importDefault(require("connect-pg-simple"));
 const index_1 = require("./routes/index");
 const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = express_1.default();
 // view engine setup
 app.set('views', 'views');
@@ -16,9 +17,10 @@ app.set('view engine', 'pug');
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static('public'));
+app.use(cookie_parser_1.default());
 //フロントエンドサーバのみCORSを許可
 app.use(cors_1.default({
-    origin: 'http://localhost:8080',
+    origin: true,
     credentials: true
 }));
 app.use(express_session_1.default({
@@ -27,9 +29,13 @@ app.use(express_session_1.default({
     }),
     secret: 'keyboard cat',
     resave: true,
-    saveUninitialized: false,
+    saveUninitialized: true,
     //寿命は10分
-    cookie: { maxAge: 10 * 60 * 1000 }
+    cookie: {
+        maxAge: 10 * 60 * 1000,
+        secure: false,
+        httpOnly: false
+    }
 }));
 app.use('/', index_1.router);
 // catch 404 and forward to error handler

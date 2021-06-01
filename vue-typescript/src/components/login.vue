@@ -1,14 +1,11 @@
 <template>
   <sts></sts>
-  <form @submit.prevent="login()" v-if="isAdmin===false">
+  <form @submit.prevent="loginRequest()">
     <div>ID: </div>
     <input type="text" name="username" v-model="username">
     <div>Password: </div>
     <input type="password" name="password" v-model="password">
     <button type="submit">Login</button>
-  </form>
-  <form @submit.prevent="login()" v-else>
-    <button type="submit" >Logout</button>
   </form>
 </template>
 
@@ -16,6 +13,7 @@
 import { Options, Vue } from 'vue-class-component';
 import { defineComponent} from 'vue';
 import axios from 'axios';
+import cookie from 'vue-cookies';
 
 
 export default defineComponent({
@@ -28,39 +26,30 @@ export default defineComponent({
     }
   },
   methods:{
-    login: async function(){
+    loginRequest: async function(){
       console.log(`username:${this.username},password:${this.password}`)
       axios.interceptors.request.use(request => {
         console.log('Starting Request: ', request)
         return request
       });
-      const hoge = await axios.post('http://localhost:5000/login',{
+      const res = await axios.post('http://localhost:5000/login',{
         username: this.username,
-        password: this.password
+        password: this.password,
+        withCredentials: true
       },{
         headers: {'Content-Type': 'application/json'},
-      });
-      console.log(hoge.data.sessionID);
-      /*.catch(err=>{
-        console.log(err)
-        return err.response
-      })*/
-      /*
-      if (res.status===200){
-        this.isAdmin=true;
+      },);
+      console.log(res.data);
+      if (res.data.sessID!==""){
+        const expires:string= res.data.expires;
+        const sessID:string = res.data.sessID;
+        console.log(sessID);
+        console.log(expires)
+        document.cookie = `sessID=${sessID};expires=${expires}path=/`;
+        //ここにログイン状態に移行するしかけを入れる
+        this.$emit('setLogin')
       }else{
-        this.isAdmin=false;
-      }
-      //this.$emit('reload')*/
-    },
-    async logout(){
-      const res = await axios.get('http://localhost:5000/logout');
-    },
-    hoge(num:number){
-      if (num=1){
-        return(true);
-      }else{
-        return(false);
+        console.log('failue');
       }
     },
   }

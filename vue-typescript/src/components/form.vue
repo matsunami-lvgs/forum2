@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="sendPost" id="Postigform" >
+  <form @submit.prevent="postRequest" id="Postigform" >
     <input  v-model="pwriter">
     <br>
     <textarea v-model="pbody" placeholder="コメント内容"></textarea>
@@ -21,7 +21,7 @@ export default defineComponent({
     }
   },
   methods:{
-    sendPost:async function(){
+    postRequest:async function(){
       /*
       var params = new URLSearchParams()
       params.append('postwriter', this.pwriter);
@@ -42,7 +42,7 @@ export default defineComponent({
       },{
         headers: {'Content-Type': 'application/json'},
       });
-      //this.$emit('reload')
+      this.$emit('reload')
     },
   },
 })

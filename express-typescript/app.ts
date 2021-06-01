@@ -4,6 +4,7 @@ import session from 'express-session';
 import connect_pg_simple from 'connect-pg-simple';
 import { router as indexRouter} from './routes/index';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 const app = express();
 
 // view engine setup
@@ -12,9 +13,10 @@ app.set('view engine', 'pug');
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use(cookieParser())
 //フロントエンドサーバのみCORSを許可
 app.use(cors({
-  origin:'http://localhost:8080',
+  origin: true,
   credentials: true
 }));
 app.use(session({
@@ -23,9 +25,13 @@ app.use(session({
   }),
   secret: 'keyboard cat',
   resave: true,
-  saveUninitialized: false,
+  saveUninitialized: true,
   //寿命は10分
-  cookie: {maxAge: 10 * 60 * 1000}
+  cookie: {
+    maxAge: 10 * 60 * 1000,
+    secure:false,
+    httpOnly: false
+  }
 }));
 
 app.use('/', indexRouter);

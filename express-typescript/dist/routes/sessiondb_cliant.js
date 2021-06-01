@@ -83,11 +83,11 @@ exports.updatehash = updatehash;
 //突合
 const selecthash = function (hash) {
     return __awaiter(this, void 0, void 0, function* () {
-        const hoge = yield Session.count({
+        const result = yield Session.count({
             where: { hashid: hash }
         });
-        console.log(hoge);
-        return hoge;
+        console.log(result);
+        return result;
     });
 };
 exports.selecthash = selecthash;

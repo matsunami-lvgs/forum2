@@ -61,12 +61,12 @@ router.use(passport_1.default.session());
 /* GET home page. */
 router.get('/', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const fuga = yield db_cliant_1.selectAll();
+        const posts = yield db_cliant_1.selectAll();
         console.log(`send posts ${new Date()}`);
         console.log(`req.usr: ${req.user}`);
         console.log(`req.isAuthenticated: ${req.isAuthenticated()}`);
         //フロントエンドの実装につき一部Json化
-        res.json(Object.values(fuga));
+        res.json(Object.values(posts));
     });
 });
 router.get('/checklogin', function (req, res, next) {
@@ -103,18 +103,34 @@ router.post('/login', passport_1.default.authenticate('local'), function (req, r
         console.log(req.isAuthenticated());
         const tokenhash = yield sessiondb_cliant_1.makehash(req.sessionID);
         console.log(tokenhash);
-        res.json({ sessionID: tokenhash });
+        const expires = responseExpireToString(req.session.cookie.expires);
+        res.cookie('sessID2', tokenhash, {
+            maxAge: 10 * 60 * 1000,
+            httpOnly: false,
+        });
+        console.log(res);
+        res.json({ sessID: tokenhash, expires: expires });
+        //console.log(res)
         next();
     });
 });
 router.post('/login', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const hoge = yield sessiondb_cliant_1.makehash(req.sessionID);
-        yield sessiondb_cliant_1.updatehash(req.sessionID, hoge);
+        const hash = yield sessiondb_cliant_1.makehash(req.sessionID);
+        yield sessiondb_cliant_1.updatehash(req.sessionID, hash);
         //res.json(hoge);
-        console.log(hoge);
+        console.log(hash);
+        console.log(res.header);
     });
 });
+const responseExpireToString = function (req) {
+    if (req === undefined) {
+        return ('');
+    }
+    else {
+        return (req.toUTCString());
+    }
+};
 /*
   console.log('これでどうだ');
   console.log(req.sessionID);
@@ -170,6 +186,7 @@ router.post('/admin/updatesubmit', function (req, res, next) {
         //redilectNotAuth(req,res,next);
         console.log('アップデート本文');
         console.log(req.body.updateid, req.body.updatebody);
+        console.log(req);
         const fuga = yield db_cliant_1.updatewhereID(req.body.updateid, req.body.updatebody);
         console.log(fuga);
         res.json();

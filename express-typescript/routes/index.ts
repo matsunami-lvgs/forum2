@@ -5,6 +5,7 @@ import passport from 'passport';
 import passportLocal from 'passport-local';
 import{makehash,updatehash, selecthash, deletesession} from './sessiondb_cliant';
 import { token } from 'morgan';
+import { EmptyResultError } from 'sequelize';
 
 const LocalStrategy = passportLocal.Strategy;
 const router = express.Router();
@@ -29,22 +30,22 @@ const redilectNotAuth = function(req:express.Request,res:express.Response,next:e
 passport.use(new LocalStrategy(
   (username ,password ,done) => {
     if (username === admin.username && password === admin.password){
-      console.log('sucess');
+      console.log('Authentication Sucess');
       return done (null,{username: username, password: password});
     }else if (username !== admin.username || password !== admin.password){
-      console.log('failue');
+      console.log('Authentication failue');
       return done(null,false);
     } 
   }
 ));
 
 passport.serializeUser((user,done)=>{
-  console.log('selialize');
+  console.log('selialize...');
   done(null,user);
 });
 
 passport.deserializeUser((user:Express.User,done)=>{
-  console.log('deselialize');
+  console.log('deselialize...');
   done(null,user);
 });
 
@@ -57,25 +58,15 @@ router.use(passport.session());
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
-  const fuga:Object = await selectAll();
-  console.log (`send posts ${new Date()}`);
+  const posts:Object = await selectAll();
+  console.log (`Received a request  ${new Date()}`);
   console.log(`req.usr: ${req.user}`);
   console.log(`req.isAuthenticated: ${req.isAuthenticated()}`);
   //フロントエンドの実装につき一部Json化
-  res.json(Object.values(fuga)); 
+  res.json(Object.values(posts)); 
 });
 
-router.get('/checklogin', async function(req, res, next) {
-  console.log (`check admin : ${req.isAuthenticated()} ${new Date()}`);
-  if (await req.isAuthenticated()){
-    res.status(200);
-    res.json();
-  }else{
-    //試しにどちらも200を返してみる、認証系の実装時に401に戻す
-    res.status(401);
-    res.json();
-  }
-});
+
 
 router.post('/write',async function(req,res,next){
   console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
@@ -89,102 +80,80 @@ router.post('/write',async function(req,res,next){
  * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
  * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
  */
+//Todo,Cookieの仕様が固まったらconsole.logをどうにかする
 router.post('/login',
   passport.authenticate('local'),
   async function(req,res,next){
     console.log('これでどうだ');
     console.log(req.sessionID);
     console.log(req.isAuthenticated());
-    const tokenhash = await makehash(req.sessionID);
+    const tokenhash:string = await makehash(req.sessionID);
     console.log(tokenhash);
-    res.cookie('sessionID',tokenhash,{
-      maxAge: 60000,
-      httpOnly: false
-    })
-    res.json({});
+    const expires:string = responseExpireToString(req.session.cookie.expires);
+    res.cookie('sessID2',tokenhash,{
+      maxAge:10*60*1000,
+      httpOnly:false,
+    });
+    console.log(res)
+    res.json({sessID: tokenhash ,expires:expires});
+    //console.log(res)
     next ();
   }
 );
 router.post('/login',
   async function(req,res,next){
-    const hoge = await makehash(req.sessionID)
-    await updatehash(req.sessionID,hoge);
+    const hash:string = await makehash(req.sessionID)
+    await updatehash(req.sessionID,hash);
     //res.json(hoge);
-    console.log(hoge);
+    console.log(hash);
+    console.log(res.header);
   }
-)
-
-
-/*
-  console.log('これでどうだ');
-  console.log(req.sessionID);
-  console.log(req.isAuthenticated());
-  if (req.sessionID!==null){
-    const tokenhash = await addhash(req.sessionID);
-    console.log(tokenhash);
-    res.json(tokenhash);
+);
+const responseExpireToString = function(req:Date|undefined):string{
+  if (req === undefined){
+    return('')
   }else{
-    res.status(401);
-    res.json;
+    return(req.toUTCString())
   }
-});
-*/
+};
 
-/*
-async function(req,res,next){
-  await passport.authenticate('local'),(req,res)=>{
-
-  }
-  const hoge:boolean=await redilectNotAuth(req,res,next)
-  if(hoge){
-    console.log('seikou');
-    res.status(200);
-    res.json();
-  }else{
-    console.log('sippai');
-    res.status(401);
-    res.json()
-  }
-});*/
-
-
-router.get('/logout',function (req,res,next){
+router.post('/logout',function (req,res,next){
   req.logout();
+  //todo
+  //deletesession('リクエストのcookieについてるハッシュ');
   res.json();
 });
-
-/*¥l
-router.get('/admin', async function(req, res, next) {
-  const fuga = await selectAll();
-  console.log('req.user');
-  console.log(req.user);
-  console.log('req.session');
-  console.log(req.session);
-  console.log('req.isAuthenticated');
-  console.table(req.isAuthenticated());
-  redilectNotAuth(req,res,next);
-  res.render('index', {
-    title: 'けいじばん（管理用）',
-    posts: fuga,
-    isAdmin: true,
-  });
-});*/
 
 router.post('/admin/updatesubmit', async function(req, res, next){
   //redilectNotAuth(req,res,next);
-  console.log('アップデート本文');
-  console.log(req.body.updateid,req.body.updatebody);
-  const fuga = await updatewhereID(req.body.updateid,req.body.updatebody);
-  console.log(fuga);
-  res.json();
+  //todo
+  //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
+  if (1===1){
+    console.log('アップデート本文');
+    console.log(req.body.updateid,req.body.updatebody);
+    console.log(req);
+    const fuga = await updatewhereID(req.body.updateid,req.body.updatebody);
+    console.log(fuga);
+    res.json();
+  }else{
+    res.status(401);
+    res.json()
+  }
 });
 
 //TODO
 router.post('/admin/delete',async function(req,res,next){
   //redilectNotAuth(req,res,next);
-  console.log(`[ID]:${req.body.deleteid}`);
-  await deletewhereID(req.body.deleteid);
-  res.json();
+  //todo
+  //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
+  if (1===1){
+    console.log(`[ID]:${req.body.deleteid}`);
+    await deletewhereID(req.body.deleteid);
+    res.json();
+  }else{
+    res.status(401);
+    res.json();
+  }
 });
 
 router.post('/admin/reset',async function(req,res,next){

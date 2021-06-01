@@ -60,21 +60,21 @@ const create = async function () {
 };
 
 const selectAll  =async function ():Promise<object>{
-  const hoge = await Posts.findAll({
+  const result = await Posts.findAll({
     attributes:['id', 'name', 'createdAt', 'body'],
     order:[['id','ASC']]
   });
-  return(hoge);
+  return(result);
 };
 
 const selectwhereID = async function (postsID:number):Promise<object>{
-  const hoge = await Posts.findAll({
+  const result = await Posts.findAll({
     attributes:['id', 'name', 'createdAt', 'body'],
     where:{
       id:postsID
     }
   });
-  return hoge;
+  return result;
 };
 
 const deletewhereID = async function (postsID:number) {
