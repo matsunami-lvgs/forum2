@@ -44,8 +44,9 @@ Session.init(
 //ハッシュ生成＆埋め込み
 //生成したハッシュを返す
 const makehash = async function (postsid: string) {
-  //まずはエスケープ等を意識せずに使ってみる
-  const hash: string = await crypto.createHash('sha256').update(postsid).digest('hex');
+  //とりあえず気休め程度の乱数を混ぜてみる
+  const random:string = Math.random().toString(36).substring(8);
+  const hash: string = await crypto.createHash('sha256').update(`${postsid}${random}`).digest('hex');
   console.log(hash);
   console.log(postsid);
   console.log(typeof (hash));
@@ -77,7 +78,7 @@ const updatehash = async function (postid: string, hash: string) {
 };
 
 //突合
-const selecthash = async function (hash: string) {
+const checkhash = async function (hash: string) {
   const result: number = await Session.count({
     where: { hashid: hash }
   });
@@ -96,4 +97,4 @@ const deletesession = async function (hash: string) {
   });
 };
 
-export { makehash, updatehash, selecthash, deletesession };
+export { makehash, updatehash, checkhash, deletesession };

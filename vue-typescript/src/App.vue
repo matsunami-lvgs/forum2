@@ -6,13 +6,15 @@
     <Login  @setLogin="setLogin" v-on:reload="reload()"/>
   </div>
   <h1>{{title}}</h1>
-  <div v-if="isLogin===true">
+  <div v-if="isLogin===true" class="posts">
     <PostsAdmin :key="resetKey" v-on:reload="reload()"/>
   </div>
-  <div v-else>
-    <Posts :key="resetKey" v-on:reload="reload()"/>
+  <div v-else class="posts">
+    <Posts :key="resetKey" v-on:reload="reload()" />
   </div>
-  <PostingForm v-on:reload="reload()" />
+  <div class="posts">
+    <PostingForm v-on:reload="reload()" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -38,7 +40,7 @@ export default defineComponent({
     return{
       title:'けいじばん',
       resetKey: 0,
-      isLogin:Boolean
+      isLogin:false
     }
   },
   /*
@@ -66,6 +68,14 @@ export default defineComponent({
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 30px;
+  margin-bottom: 60px;
 }
+.posts{
+  margin-left: auto;
+  margin-right: auto;
+  max-width:700px;
+  overflow-wrap: break-all;
+}
+
 </style>

@@ -1,13 +1,13 @@
 <template>
   <ul class = "Posts">
     <div v-for="kakikomi in kakikomi">
-      <p>
-        <id>{{kakikomi.id}}</id>
-        <name>投稿者: {{kakikomi.name}}</name> 
-        <time>投稿時間 {{kakikomi.createdAt}}</time>
+        <id class="kakikomielement">{{kakikomi.id}}</id>
+        <name class="kakikomielement">投稿者: {{kakikomi.name}}</name> 
+        <time class="kakikomielement">投稿時間: {{kakikomi.showCreated}}</time>
           <br>
           <postbody v-model="kbody">{{kakikomi.body}}</postbody>
-      </p>
+      <p></p>
+      <hr>
     </div>
   </ul>
 </template>
@@ -19,74 +19,22 @@ import axios from 'axios';
 
 export default defineComponent ({
   name: 'Posts',
-  props:{
-    isLogin:{
-      type:Boolean,
-      default:false,
-      required: true
-    }
-  },
+
   data() {
     return {
       kakikomi:Object,
-      isAdmin:true,
       isUpdate:0,
       ubody:'',
       kbody:''
     };
   },
   async mounted() {
-    const items= await axios.get('http://localhost:5000/');
-    console.log(items);
-    this.kakikomi=items.data;
-    //const checkLogin = await axios.get('http://localhost:5000/checklogin');
-    //console.log(checkLogin);
+    const res= await axios.get('/api/postlist');
+    console.log(res);
+    this.kakikomi=res.data;
   },
   methods:{
-    /*
-    async getPostsData(){
-    const items= await axios.get('http://localhost:5000/');
-    console.log(items)
-    this.kakikomi=items.data;
-    return(true);
-    //const checkLogin = await axios.get('http://localhost:5000/checklogin');
-    //console.log(checkLogin);
-    },
-    async deletePost(postid:number,postbody:string){
-      if(confirm(`この書き込みを削除しますか？\n${postid}: ${postbody}`)){
-        //ここでログインチェックを行う
-        await axios.post('http://localhost:5000/admin/delete',{
-          deleteid: postid
-        },{
-          headers: {'Content-Type': 'application/json'},
-        });
-        await this.getPostsData();
-      }else{
-        //何もしない
-      };
-    },
-    updateSelect(id:number,name:string){
-      if(this.isUpdate===id){
-        this.isUpdate=0
-      }else{
-        this.isUpdate=id;
-        this.ubody=name
 
-      }
-    },
-    async updatePost(id:number){
-      const post:string = this.ubody;
-      console.log(id);
-      console.log(post);
-      //ここでログインチェックを行う
-      await axios.post('http://localhost:5000/admin/updatesubmit',{
-        updateid: id,
-        updatebody: post
-      },{
-      headers: {'Content-Type': 'application/json'},
-      });
-      this.$emit('reload')
-    },*/
   }
 
 });
@@ -113,4 +61,15 @@ a {
   white-space: pre-wrap;
   text-align: left;
 }
+.kakikomielement{
+  margin-right: 7px;
+}
+name {
+  color: blue;
+}
+postbody{
+  font-size: 115%;
+  color: black;
+}
+
 </style>

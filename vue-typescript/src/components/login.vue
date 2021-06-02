@@ -1,11 +1,10 @@
 <template>
-  <sts></sts>
   <form @submit.prevent="loginRequest()">
-    <div>ID: </div>
-    <input type="text" name="username" v-model="username">
-    <div>Password: </div>
-    <input type="password" name="password" v-model="password">
-    <button type="submit">Login</button>
+    ID: 
+      <input type="text" name="username" v-model="username" class="loginbox">
+      Password: 
+      <input type="password" name="password" v-model="password" class="loginbox">
+      <button type="submit">Login</button>
   </form>
 </template>
 
@@ -27,29 +26,31 @@ export default defineComponent({
   },
   methods:{
     loginRequest: async function(){
-      console.log(`username:${this.username},password:${this.password}`)
-      axios.interceptors.request.use(request => {
-        console.log('Starting Request: ', request)
-        return request
-      });
-      const res = await axios.post('http://localhost:5000/login',{
-        username: this.username,
-        password: this.password,
-        withCredentials: true
-      },{
-        headers: {'Content-Type': 'application/json'},
-      },);
-      console.log(res.data);
-      if (res.data.sessID!==""){
-        const expires:string= res.data.expires;
-        const sessID:string = res.data.sessID;
-        console.log(sessID);
-        console.log(expires)
-        document.cookie = `sessID=${sessID};expires=${expires}path=/`;
-        //ここにログイン状態に移行するしかけを入れる
-        this.$emit('setLogin')
-      }else{
-        console.log('failue');
+      try{
+        console.log(`username:${this.username},password:${this.password}`)
+        axios.interceptors.request.use(request => {
+          console.log('Starting Request: ', request)
+          return request
+        });
+        const res = await axios.post('/api/login',{
+          username: this.username,
+          password: this.password,
+          withCredentials: true
+        },{
+          headers: {'Content-Type': 'application/json'},
+        },);
+        console.log(res.data);
+        if (res.status===200){
+          const expires:string= res.data.expires;
+          const sessID:string = res.data.sessID;
+          console.log(sessID);
+          console.log(expires)
+          this.$emit('setLogin')
+        }else{
+          throw new Error('認証に失敗しました');
+        }
+      }catch(err){
+        alert(err.message)
       }
     },
   }
@@ -59,5 +60,8 @@ export default defineComponent({
 <style>
 #login {
   display: flex;
+}
+.loginbox{
+  margin-right: 5px;
 }
 </style>

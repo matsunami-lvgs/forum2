@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletesession = exports.selecthash = exports.updatehash = exports.makehash = void 0;
+exports.deletesession = exports.checkhash = exports.updatehash = exports.makehash = void 0;
 const sequelize_1 = require("sequelize");
 const crypto_1 = __importDefault(require("crypto"));
 const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum', { logging: console.log });
@@ -45,8 +45,9 @@ Session.init({
 //生成したハッシュを返す
 const makehash = function (postsid) {
     return __awaiter(this, void 0, void 0, function* () {
-        //まずはエスケープ等を意識せずに使ってみる
-        const hash = yield crypto_1.default.createHash('sha256').update(postsid).digest('hex');
+        //とりあえず気休め程度の乱数を混ぜてみる
+        const random = Math.random().toString(36).substring(8);
+        const hash = yield crypto_1.default.createHash('sha256').update(`${postsid}${random}`).digest('hex');
         console.log(hash);
         console.log(postsid);
         console.log(typeof (hash));
@@ -81,16 +82,20 @@ const updatehash = function (postid, hash) {
 };
 exports.updatehash = updatehash;
 //突合
-const selecthash = function (hash) {
+const checkhash = function (hash) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield Session.count({
             where: { hashid: hash }
         });
-        console.log(result);
-        return result;
+        if (result === 1) {
+            return (true);
+        }
+        else {
+            return (false);
+        }
     });
 };
-exports.selecthash = selecthash;
+exports.checkhash = checkhash;
 const deletesession = function (hash) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Session.destroy({

@@ -1,12 +1,11 @@
 <template>
   <ul class = "Posts">
     <div v-for="kakikomi in kakikomi">
-      <p>
-        <id>{{kakikomi.id}}</id>
-        <name>投稿者: {{kakikomi.name}}</name> 
-        <time>投稿時間 {{kakikomi.createdAt}}</time>
-        <button type="submit" @click="deletePost(kakikomi.id,kakikomi.body)">削除</button>
-        <button type="submit" @click="updateSelect(kakikomi.id,kakikomi.body)">編集</button>
+        <id class="kakikomielement">{{kakikomi.id}}</id>
+        <name class="kakikomielement">投稿者: {{kakikomi.name}}</name> 
+        <time class="kakikomielement">投稿時間: {{kakikomi.showCreated}}</time>
+        <button type="submit" @click="deletePost(kakikomi.id,kakikomi.body)" class="submit">削除</button>
+        <button type="submit" @click="updateSelect(kakikomi.id,kakikomi.body)" class="submit">編集</button>
         <br>
         <postbody v-model="kbody">{{kakikomi.body}}</postbody>
 
@@ -14,9 +13,11 @@
           <br>
           <textarea v-model="ubody"></textarea>
           <br>
-          <button type="submit" @click="updatePost(kakikomi.id)">編集確定</button>
+          <button type="submit" @click="updatePost(kakikomi.id)" class="submit">編集確定</button>
+          <br>
         </update>
-      </p>
+      <p></p>
+      <hr>
     </div>
   </ul>
 </template>
@@ -37,7 +38,7 @@ export default defineComponent ({
     };
   },
   async mounted() {
-    const items= await axios.get('http://localhost:5000/');
+    const items= await axios.get('/api/postlist');
     console.log(items);
     this.kakikomi=items.data;
     //const checkLogin = await axios.get('http://localhost:5000/checklogin');
@@ -45,7 +46,7 @@ export default defineComponent ({
   },
   methods:{
     async getPostsData(){
-    const items= await axios.get('http://localhost:5000/');
+    const items= await axios.get('/api/postlist');
     console.log(items)
     this.kakikomi=items.data;
     return(true);
@@ -53,17 +54,21 @@ export default defineComponent ({
     //console.log(checkLogin);
     },
     async deletePost(postid:number,postbody:string){
-      if(confirm(`この書き込みを削除しますか？\n${postid}: ${postbody}`)){
-        //ここでログインチェックを行う
-        await axios.post('http://localhost:5000/admin/delete',{
-          deleteid: postid
-        },{
-          headers: {'Content-Type': 'application/json'},
-        });
-        await this.getPostsData();
-      }else{
-        //何もしない
-      };
+      try{
+        if(confirm(`この書き込みを削除しますか？\n${postid}: ${postbody}`)){
+          const res = await axios.delete('/api/postlist',{
+            data:{deleteid: postid}
+          });
+          if (res.status===401){
+          //何らかのエラー処理
+          }
+          await this.getPostsData();
+        }else{
+          //何もしない
+        };
+      }catch(err){
+        alert(err.message)
+      }
     },
     updateSelect(id:number,name:string){
       if(this.isUpdate===id){
@@ -71,21 +76,25 @@ export default defineComponent ({
       }else{
         this.isUpdate=id;
         this.ubody=name
-
       }
     },
     async updatePost(id:number){
-      const post:string = this.ubody;
-      console.log(id);
-      console.log(post);
-      //サーバーがわにハッシュを渡して向こうで処理する、401で帰ってきたらなんか見せる
-      await axios.post('http://localhost:5000/admin/updatesubmit',{
-        updateid: id,
-        updatebody: post
-      },{
-      headers: {'Content-Type': 'application/json'},
-      });
-      this.$emit('reload')
+      try{
+        const post:string = this.ubody;
+        console.log(id);
+        console.log(post);
+        //サーバーがわにハッシュを渡して向こうで処理する、401で帰ってきたらなんか見せる
+        const res = await axios.put('/api/postlist',{
+          updateid: id,
+          updatebody: post
+        },{
+        headers: {'Content-Type': 'application/json'},
+        })
+      }catch(err)
+      {
+        alert(err.message)
+      }
+      this.$emit('reload');
     },
   }
 
@@ -112,5 +121,26 @@ a {
 .Posts{
   white-space: pre-wrap;
   text-align: left;
+}
+.kakikomielement{
+  margin-right: 7px;
+}
+name {
+  color: blue;
+}
+postbody{
+  font-size: 115%;
+  color: black;
+}
+
+textarea {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  resize: none;
+  height:250px;
+  width:100%;
+}
+.submit{
+  float: right;
 }
 </style>

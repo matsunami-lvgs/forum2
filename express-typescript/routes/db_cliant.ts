@@ -1,10 +1,15 @@
 import { Sequelize , Model, DataTypes } from 'sequelize';
 import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from "dayjs/plugin/utc";
 import { CreatedAt } from 'sequelize-typescript';
 const sequelize = new Sequelize(
   'postgres://postgres:hoge@localhost/forum'
 );
 const table_name :string= 'posts' 
+dayjs.extend(timezone);
+dayjs.extend(utc);
+
 
 class Posts extends Model {
   public id!:number;
@@ -51,7 +56,7 @@ Posts.init(
 );
 
 const insert = async function (inputname:string,inputbody:string) {
-  await Posts.create({name:inputname,body:inputbody,showCreated:formatTimestamp(new Date)});
+  await Posts.create({name:inputname,body:inputbody,showCreated:formatTimestamp()});
 };
 
 //テーブル作成用
@@ -61,7 +66,7 @@ const create = async function () {
 
 const selectAll  =async function ():Promise<object>{
   const result = await Posts.findAll({
-    attributes:['id', 'name', 'createdAt', 'body'],
+    attributes:['id', 'name', 'showCreated', 'body'],
     order:[['id','ASC']]
   });
   return(result);
@@ -69,7 +74,7 @@ const selectAll  =async function ():Promise<object>{
 
 const selectwhereID = async function (postsID:number):Promise<object>{
   const result = await Posts.findAll({
-    attributes:['id', 'name', 'createdAt', 'body'],
+    attributes:['id', 'name', 'showCreated', 'body'],
     where:{
       id:postsID
     }
@@ -98,8 +103,9 @@ const resetTable = async function () {
   await sequelize.query('TRUNCATE TABLE posts RESTART IDENTITY');
 }
 
-const formatTimestamp=function(timestamp:Date){
-  const formatted:string = dayjs(timestamp).format('YYYY/MM/DD HH:mm:ss.SSS')
+const formatTimestamp=function():string{
+  const formatted:string = dayjs().tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss.SSS');
+  console.log(`時間は${formatted}`)
   return(formatted);
 };
 

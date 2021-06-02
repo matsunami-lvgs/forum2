@@ -15,8 +15,8 @@ export default defineComponent({
   },
   methods:{
     logoutRequest: async function(){
-      document.cookie="sessID=;";
-      const res = await axios.post('http://localhost:5000/logout');
+      //document.cookie="sessID=;";
+      const res = await axios.delete('/api/login');
       this.$emit('setLogout')
     },
   }

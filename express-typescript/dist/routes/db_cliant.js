@@ -15,8 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.create = exports.resetTable = exports.updatewhereID = exports.selectwhereID = exports.deletewhereID = exports.selectAll = exports.insert = void 0;
 const sequelize_1 = require("sequelize");
 const dayjs_1 = __importDefault(require("dayjs"));
+const timezone_1 = __importDefault(require("dayjs/plugin/timezone"));
+const utc_1 = __importDefault(require("dayjs/plugin/utc"));
 const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum');
 const table_name = 'posts';
+dayjs_1.default.extend(timezone_1.default);
+dayjs_1.default.extend(utc_1.default);
 class Posts extends sequelize_1.Model {
 }
 Posts.init({
@@ -51,7 +55,7 @@ Posts.init({
 });
 const insert = function (inputname, inputbody) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Posts.create({ name: inputname, body: inputbody, showCreated: formatTimestamp(new Date) });
+        yield Posts.create({ name: inputname, body: inputbody, showCreated: formatTimestamp() });
     });
 };
 exports.insert = insert;
@@ -65,7 +69,7 @@ exports.create = create;
 const selectAll = function () {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield Posts.findAll({
-            attributes: ['id', 'name', 'createdAt', 'body'],
+            attributes: ['id', 'name', 'showCreated', 'body'],
             order: [['id', 'ASC']]
         });
         return (result);
@@ -75,7 +79,7 @@ exports.selectAll = selectAll;
 const selectwhereID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield Posts.findAll({
-            attributes: ['id', 'name', 'createdAt', 'body'],
+            attributes: ['id', 'name', 'showCreated', 'body'],
             where: {
                 id: postsID
             }
@@ -111,7 +115,8 @@ const resetTable = function () {
     });
 };
 exports.resetTable = resetTable;
-const formatTimestamp = function (timestamp) {
-    const formatted = dayjs_1.default(timestamp).format('YYYY/MM/DD HH:mm:ss.SSS');
+const formatTimestamp = function () {
+    const formatted = dayjs_1.default().tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss.SSS');
+    console.log(`時間は${formatted}`);
     return (formatted);
 };

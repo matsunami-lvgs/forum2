@@ -39,51 +39,38 @@ const redilectNotAuth = function (req, res, next) {
 };
 passport_1.default.use(new LocalStrategy((username, password, done) => {
     if (username === admin.username && password === admin.password) {
-        console.log('sucess');
+        console.log('Authentication Sucess');
         return done(null, { username: username, password: password });
     }
     else if (username !== admin.username || password !== admin.password) {
-        console.log('failue');
+        console.log('Authentication failue');
         return done(null, false);
     }
 }));
 passport_1.default.serializeUser((user, done) => {
-    console.log('selialize');
+    console.log('selialize...');
     done(null, user);
 });
 passport_1.default.deserializeUser((user, done) => {
-    console.log('deselialize');
+    console.log('deselialize...');
     done(null, user);
 });
 router.use(passport_1.default.initialize());
 router.use(passport_1.default.session());
 //ここまで認証の設定
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const posts = yield db_cliant_1.selectAll();
-        console.log(`send posts ${new Date()}`);
+        console.log(`Received a request  ${new Date()}`);
         console.log(`req.usr: ${req.user}`);
         console.log(`req.isAuthenticated: ${req.isAuthenticated()}`);
+        console.log(`req.cookies: ${req.cookies.sessID2}`);
         //フロントエンドの実装につき一部Json化
         res.json(Object.values(posts));
     });
 });
-router.get('/checklogin', function (req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log(`check admin : ${req.isAuthenticated()} ${new Date()}`);
-        if (yield req.isAuthenticated()) {
-            res.status(200);
-            res.json();
-        }
-        else {
-            //試しにどちらも200を返してみる、認証系の実装時に401に戻す
-            res.status(401);
-            res.json();
-        }
-    });
-});
-router.post('/write', function (req, res, next) {
+router.post('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
         console.log(req.body);
@@ -91,30 +78,65 @@ router.post('/write', function (req, res, next) {
         res.json();
     });
 });
+router.put('/api/postlist', function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        //redilectNotAuth(req,res,next);
+        //todo
+        //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
+        if (sessiondb_cliant_1.checkhash(req.cookies.sessID2)) {
+            console.log('アップデート本文');
+            console.log(req.body.updateid, req.body.updatebody);
+            const fuga = yield db_cliant_1.updatewhereID(req.body.updateid, req.body.updatebody);
+            console.log(fuga);
+            res.json();
+        }
+        else {
+            res.status(401);
+            res.json();
+        }
+    });
+});
+//TODO
+router.delete('/api/postlist', function (req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        //redilectNotAuth(req,res,next);
+        //todo
+        //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
+        console.log(`req.cookies: ${req.cookies.sessID2}`);
+        if (sessiondb_cliant_1.checkhash(req.cookies.sessID2)) {
+            console.log(`[ID]:${req.body.deleteid}`);
+            yield db_cliant_1.deletewhereID(req.body.deleteid);
+            res.json();
+        }
+        else {
+            res.status(401);
+            res.json();
+        }
+    });
+});
 //ここを抜けて初めて登録が走るのでは？？という
 /***
  * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
  * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
  */
-router.post('/login', passport_1.default.authenticate('local'), function (req, res, next) {
+//Todo,Cookieの仕様が固まったらconsole.logをどうにかする
+router.post('/api/login', passport_1.default.authenticate('local'), function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('これでどうだ');
         console.log(req.sessionID);
         console.log(req.isAuthenticated());
         const tokenhash = yield sessiondb_cliant_1.makehash(req.sessionID);
         console.log(tokenhash);
-        const expires = responseExpireToString(req.session.cookie.expires);
+        //const expires:string = responseExpireToString(req.session.cookie.expires);
         res.cookie('sessID2', tokenhash, {
             maxAge: 10 * 60 * 1000,
             httpOnly: false,
         });
-        console.log(res);
-        res.json({ sessID: tokenhash, expires: expires });
-        //console.log(res)
+        res.json({});
         next();
     });
 });
-router.post('/login', function (req, res, next) {
+router.post('/api/login', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const hash = yield sessiondb_cliant_1.makehash(req.sessionID);
         yield sessiondb_cliant_1.updatehash(req.sessionID, hash);
@@ -124,82 +146,20 @@ router.post('/login', function (req, res, next) {
     });
 });
 const responseExpireToString = function (req) {
-    if (req === undefined) {
+    if (req === undefined || req === null) {
         return ('');
     }
     else {
         return (req.toUTCString());
     }
 };
-/*
-  console.log('これでどうだ');
-  console.log(req.sessionID);
-  console.log(req.isAuthenticated());
-  if (req.sessionID!==null){
-    const tokenhash = await addhash(req.sessionID);
-    console.log(tokenhash);
-    res.json(tokenhash);
-  }else{
-    res.status(401);
-    res.json;
-  }
-});
-*/
-/*
-async function(req,res,next){
-  await passport.authenticate('local'),(req,res)=>{
-
-  }
-  const hoge:boolean=await redilectNotAuth(req,res,next)
-  if(hoge){
-    console.log('seikou');
-    res.status(200);
-    res.json();
-  }else{
-    console.log('sippai');
-    res.status(401);
-    res.json()
-  }
-});*/
-router.get('/logout', function (req, res, next) {
+router.delete('/api/login', function (req, res, next) {
+    sessiondb_cliant_1.deletesession(req.cookies.sessID2);
     req.logout();
+    res.clearCookie('sessID2');
+    //todo
+    //deletesession('リクエストのcookieについてるハッシュ');
     res.json();
-});
-/*¥l
-router.get('/admin', async function(req, res, next) {
-  const fuga = await selectAll();
-  console.log('req.user');
-  console.log(req.user);
-  console.log('req.session');
-  console.log(req.session);
-  console.log('req.isAuthenticated');
-  console.table(req.isAuthenticated());
-  redilectNotAuth(req,res,next);
-  res.render('index', {
-    title: 'けいじばん（管理用）',
-    posts: fuga,
-    isAdmin: true,
-  });
-});*/
-router.post('/admin/updatesubmit', function (req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        //redilectNotAuth(req,res,next);
-        console.log('アップデート本文');
-        console.log(req.body.updateid, req.body.updatebody);
-        console.log(req);
-        const fuga = yield db_cliant_1.updatewhereID(req.body.updateid, req.body.updatebody);
-        console.log(fuga);
-        res.json();
-    });
-});
-//TODO
-router.post('/admin/delete', function (req, res, next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        //redilectNotAuth(req,res,next);
-        console.log(`[ID]:${req.body.deleteid}`);
-        yield db_cliant_1.deletewhereID(req.body.deleteid);
-        res.json();
-    });
 });
 router.post('/admin/reset', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {

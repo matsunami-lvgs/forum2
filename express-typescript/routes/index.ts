@@ -3,7 +3,7 @@ import { insert ,selectAll, deletewhereID, selectwhereID,updatewhereID,resetTabl
 //import {login} from './authentication';
 import passport from 'passport';
 import passportLocal from 'passport-local';
-import{makehash,updatehash, selecthash, deletesession} from './sessiondb_cliant';
+import{makehash,updatehash, checkhash, deletesession} from './sessiondb_cliant';
 import { token } from 'morgan';
 import { EmptyResultError } from 'sequelize';
 
@@ -57,81 +57,30 @@ router.use(passport.session());
 
 
 /* GET home page. */
-router.get('/', async function(req, res, next) {
+router.get('/api/postlist', async function(req, res, next) {
   const posts:Object = await selectAll();
   console.log (`Received a request  ${new Date()}`);
   console.log(`req.usr: ${req.user}`);
   console.log(`req.isAuthenticated: ${req.isAuthenticated()}`);
+  console.log(`req.cookies: ${req.cookies.sessID2 }`);
   //フロントエンドの実装につき一部Json化
-  res.json(Object.values(posts)); 
+  res.json(Object.values(posts));
 });
 
-
-
-router.post('/write',async function(req,res,next){
+router.post('/api/postlist',async function(req,res,next){
   console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
   console.log(req.body);
   await insert(req.body.postwriter,req.body.postbody);
   res.json();
 });
 
-//ここを抜けて初めて登録が走るのでは？？という
-/***
- * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
- * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
- */
-//Todo,Cookieの仕様が固まったらconsole.logをどうにかする
-router.post('/login',
-  passport.authenticate('local'),
-  async function(req,res,next){
-    console.log('これでどうだ');
-    console.log(req.sessionID);
-    console.log(req.isAuthenticated());
-    const tokenhash:string = await makehash(req.sessionID);
-    console.log(tokenhash);
-    const expires:string = responseExpireToString(req.session.cookie.expires);
-    res.cookie('sessID2',tokenhash,{
-      maxAge:10*60*1000,
-      httpOnly:false,
-    });
-    console.log(res)
-    res.json({sessID: tokenhash ,expires:expires});
-    //console.log(res)
-    next ();
-  }
-);
-router.post('/login',
-  async function(req,res,next){
-    const hash:string = await makehash(req.sessionID)
-    await updatehash(req.sessionID,hash);
-    //res.json(hoge);
-    console.log(hash);
-    console.log(res.header);
-  }
-);
-const responseExpireToString = function(req:Date|undefined):string{
-  if (req === undefined){
-    return('')
-  }else{
-    return(req.toUTCString())
-  }
-};
-
-router.post('/logout',function (req,res,next){
-  req.logout();
-  //todo
-  //deletesession('リクエストのcookieについてるハッシュ');
-  res.json();
-});
-
-router.post('/admin/updatesubmit', async function(req, res, next){
+router.put('/api/postlist', async function(req, res, next){
   //redilectNotAuth(req,res,next);
   //todo
   //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
-  if (1===1){
+  if (checkhash(req.cookies.sessID2)){
     console.log('アップデート本文');
     console.log(req.body.updateid,req.body.updatebody);
-    console.log(req);
     const fuga = await updatewhereID(req.body.updateid,req.body.updatebody);
     console.log(fuga);
     res.json();
@@ -142,11 +91,12 @@ router.post('/admin/updatesubmit', async function(req, res, next){
 });
 
 //TODO
-router.post('/admin/delete',async function(req,res,next){
+router.delete('/api/postlist',async function(req,res,next){
   //redilectNotAuth(req,res,next);
   //todo
   //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
-  if (1===1){
+  console.log(`req.cookies: ${req.cookies.sessID2 }`);
+  if (checkhash(req.cookies.sessID2)){
     console.log(`[ID]:${req.body.deleteid}`);
     await deletewhereID(req.body.deleteid);
     res.json();
@@ -154,6 +104,55 @@ router.post('/admin/delete',async function(req,res,next){
     res.status(401);
     res.json();
   }
+});
+
+//ここを抜けて初めて登録が走るのでは？？という
+/***
+ * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
+ * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
+ */
+//Todo,Cookieの仕様が固まったらconsole.logをどうにかする
+router.post('/api/login',
+  passport.authenticate('local'),
+  async function(req,res,next){
+    console.log('これでどうだ');
+    console.log(req.sessionID);
+    console.log(req.isAuthenticated());
+    const tokenhash:string = await makehash(req.sessionID);
+    console.log(tokenhash);
+    //const expires:string = responseExpireToString(req.session.cookie.expires);
+    res.cookie('sessID2',tokenhash,{
+      maxAge:10*60*1000,
+      httpOnly:false,
+    });
+    res.json({});
+    next ();
+  }
+);
+router.post('/api/login',
+  async function(req,res,next){
+    const hash:string = await makehash(req.sessionID)
+    await updatehash(req.sessionID,hash);
+    //res.json(hoge);
+    console.log(hash);
+    console.log(res.header);
+  }
+);
+const responseExpireToString = function(req:Date|undefined):string{
+  if (req === undefined || req===null){
+    return('')
+  }else{
+    return(req.toUTCString());
+  }
+};
+
+router.delete('/api/login',function (req,res,next){
+  deletesession(req.cookies.sessID2)
+  req.logout();
+  res.clearCookie('sessID2');
+  //todo
+  //deletesession('リクエストのcookieについてるハッシュ');
+  res.json();
 });
 
 router.post('/admin/reset',async function(req,res,next){
