@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="loginRequest()">
+  <form @submit.prevent="loginRequest(username,password)">
     ID: 
       <input type="text" name="username" v-model="username" class="loginbox">
       Password: 
@@ -25,16 +25,15 @@ export default defineComponent({
     }
   },
   methods:{
-    loginRequest: async function(){
+    loginRequest: async function(username:string,password:string){
       try{
-        console.log(`username:${this.username},password:${this.password}`)
-        axios.interceptors.request.use(request => {
-          console.log('Starting Request: ', request)
-          return request
-        });
+        console.log(`username:${username},password:${password}`)
+        if(username===''||password===''){
+          throw new Error('認証に必要な項目が不足しています')
+        }
         const res = await axios.post('/api/login',{
-          username: this.username,
-          password: this.password,
+          username: username,
+          password: password,
           withCredentials: true
         },{
           headers: {'Content-Type': 'application/json'},
@@ -50,7 +49,7 @@ export default defineComponent({
           throw new Error('認証に失敗しました');
         }
       }catch(err){
-        alert(err.message)
+        alert('認証に失敗しました');
       }
     },
   }

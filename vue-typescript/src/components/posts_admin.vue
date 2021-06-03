@@ -13,7 +13,7 @@
           <br>
           <textarea v-model="ubody"></textarea>
           <br>
-          <button type="submit" @click="updatePost(kakikomi.id)" class="submit">編集確定</button>
+          <button type="submit" @click="updatePost(kakikomi.id,ubody)" class="submit">編集確定</button>
           <br>
         </update>
       <p></p>
@@ -24,8 +24,9 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { defineComponent ,} from 'vue';
+import { defineComponent } from 'vue';
 import axios from 'axios';
+import {inputCheck} from './common';
 
 export default defineComponent ({
   name: 'PostsAdmin',
@@ -45,14 +46,6 @@ export default defineComponent ({
     //console.log(checkLogin);
   },
   methods:{
-    async getPostsData(){
-    const items= await axios.get('/api/postlist');
-    console.log(items)
-    this.kakikomi=items.data;
-    return(true);
-    //const checkLogin = await axios.get('http://localhost:5000/checklogin');
-    //console.log(checkLogin);
-    },
     async deletePost(postid:number,postbody:string){
       try{
         if(confirm(`この書き込みを削除しますか？\n${postid}: ${postbody}`)){
@@ -62,7 +55,7 @@ export default defineComponent ({
           if (res.status===401){
           //何らかのエラー処理
           }
-          await this.getPostsData();
+          this.$emit('reload');
         }else{
           //何もしない
         };
@@ -78,17 +71,21 @@ export default defineComponent ({
         this.ubody=name
       }
     },
-    async updatePost(id:number){
+    async updatePost(id:number,ubody:string){
       try{
-        const post:string = this.ubody;
+        const inputcheck = new inputCheck;
+        inputcheck.checkBody(ubody);
+        if (inputcheck.getError()){
+          throw new Error(inputcheck.getMessage())
+        }
         console.log(id);
-        console.log(post);
+        console.log(ubody);
         //サーバーがわにハッシュを渡して向こうで処理する、401で帰ってきたらなんか見せる
         const res = await axios.put('/api/postlist',{
-          updateid: id,
-          updatebody: post
+        updateid: id,
+        updatebody: ubody
         },{
-        headers: {'Content-Type': 'application/json'},
+          headers: {'Content-Type': 'application/json'},
         })
       }catch(err)
       {

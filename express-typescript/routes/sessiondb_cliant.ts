@@ -43,26 +43,12 @@ Session.init(
 
 //ハッシュ生成＆埋め込み
 //生成したハッシュを返す
+//TEST
 const makehash = async function (postsid: string) {
-  //とりあえず気休め程度の乱数を混ぜてみる
-  const random:string = Math.random().toString(36).substring(8);
-  const hash: string = await crypto.createHash('sha256').update(`${postsid}${random}`).digest('hex');
+  const key:string = 'KHu4DPdn2vpBxKfqRJ2Fux9HwmVwX7Xy'; 
+  const hash: string = await crypto.createHash('sha256').update(`${key}${postsid}`).digest('hex');
   console.log(hash);
   console.log(postsid);
-  console.log(typeof (hash));
-  //const Qpostid = "'"+postsid+"'";
-  //console.log(Qpostid);
-  //postid = 
-  let num = await Session.count();
-  console.log(num);
-  /*
-  await Session.update({hashid: hash},{
-    where: {
-      sid : postsid
-    }
-  });*/
-  num = await Session.count();
-  console.log(num);
   return hash;
 };
 
@@ -73,21 +59,15 @@ const updatehash = async function (postid: string, hash: string) {
       sid: postid
     }
   })
-  let num = await Session.count();
-  console.log(num)
 };
 
 //突合
+//TEST
 const checkhash = async function (hash: string) {
-  const result: number = await Session.count({
-    where: { hashid: hash }
-  });
-  if (result === 1) {
-    return (true);
-  } else {
-    return (false)
-  }
+  const result: number = await Session.count({where: { hashid: hash }})
+  return (result===1);
 };
+
 
 const deletesession = async function (hash: string) {
   await Session.destroy({

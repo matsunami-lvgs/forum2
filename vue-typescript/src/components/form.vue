@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="postRequest"  >
+  <form @submit.prevent="postRequest(pwriter,pbody)"  >
     <input  v-model="pwriter" class="Postingform" placeholder="投稿者">
     <br>
     <textarea v-model="pbody" placeholder="コメント内容" class="Postingform"></textarea>
@@ -12,6 +12,7 @@
 import { Options, Vue } from 'vue-class-component';
 import { defineComponent } from 'vue';
 import axios from 'axios';
+import {inputCheck} from './common';
 export default defineComponent({
   name: 'PostingForm',
   data (){
@@ -21,24 +22,21 @@ export default defineComponent({
     }
   },
   methods:{
-    postRequest:async function(){
+    postRequest:async function(pwriter:string,pbody:string){
       try{
-        if(this.pbody.length===0){
-          throw new Error('本文が空です')
-        }
-        if(this.pbody.length>1000){
-          throw new Error('本文が長すぎます')
-        }
-        if(this.pwriter.length>30){
-          throw new Error('名前が長すぎます')
+        const inputcheck = new inputCheck;
+        inputcheck.checkName(pwriter);
+        inputcheck.checkBody(pbody);
+        if(inputcheck.getError()){
+          throw new Error (inputcheck.getMessage())
         }
         axios.interceptors.request.use(request => {
           console.log('Starting Request: ', request)
           return request
         });
         await axios.post('/api/postlist',{
-          postwriter: this.pwriter,
-          postbody: this.pbody
+          postwriter: pwriter,
+          postbody: pbody
         },{
           headers: {'Content-Type': 'application/json'},
         });

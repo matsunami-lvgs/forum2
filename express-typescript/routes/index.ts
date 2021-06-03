@@ -1,11 +1,8 @@
 import express from 'express';
-import { insert ,selectAll, deletewhereID, selectwhereID,updatewhereID,resetTable} from './db_cliant';
-//import {login} from './authentication';
+import { insert ,selectAll, deletewhereID,updatewhereID,resetTable} from './db_cliant';
 import passport from 'passport';
 import passportLocal from 'passport-local';
 import{makehash,updatehash, checkhash, deletesession} from './sessiondb_cliant';
-import { token } from 'morgan';
-import { EmptyResultError } from 'sequelize';
 
 const LocalStrategy = passportLocal.Strategy;
 const router = express.Router();
@@ -18,15 +15,7 @@ const admin = {
   password: 'kai'
 };
 
-const redilectNotAuth = function(req:express.Request,res:express.Response,next:express.NextFunction){
-  if (req.isAuthenticated()){
-    return (true);
-  }else{
-    return (false);
-  };
-};
-
-
+//TEST??
 passport.use(new LocalStrategy(
   (username ,password ,done) => {
     if (username === admin.username && password === admin.password){
@@ -68,33 +57,42 @@ router.get('/api/postlist', async function(req, res, next) {
 });
 
 router.post('/api/postlist',async function(req,res,next){
+  if (bodylengthcheck(req.body.postwriter)&&namelengthcheck(req.body.postbody)===false){
+    res.status(400)
+    res.json
+    return
+  }
   console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
   console.log(req.body);
   await insert(req.body.postwriter,req.body.postbody);
   res.json();
 });
 
+//分岐はないがcheckhashで処理が分離している、この関数はテストやらなくてもいいんじゃないか
 router.put('/api/postlist', async function(req, res, next){
-  //redilectNotAuth(req,res,next);
-  //todo
-  //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
-  if (checkhash(req.cookies.sessID2)){
-    console.log('アップデート本文');
-    console.log(req.body.updateid,req.body.updatebody);
-    const fuga = await updatewhereID(req.body.updateid,req.body.updatebody);
-    console.log(fuga);
-    res.json();
-  }else{
+  if (await checkhash(req.cookies.sessID2)&&bodylengthcheck(req.body.updatebody)===false){
     res.status(401);
     res.json()
+    return
   }
+  console.log('アップデート本文');
+  console.log(req.body.updateid,req.body.updatebody);
+  const fuga = await updatewhereID(req.body.updateid,req.body.updatebody);
+  console.log(fuga);
+  res.json();
 });
+//TEST
+const bodylengthcheck=(body:string):boolean=>{
+const maxlength = 3000;
+  return(maxlength>body.length&&body.length>0)
+}
+//TEST
+const namelengthcheck=(name:string):boolean=>{
+  const maxlength = 30;
+  return(maxlength>name.length)
+}
 
-//TODO
 router.delete('/api/postlist',async function(req,res,next){
-  //redilectNotAuth(req,res,next);
-  //todo
-  //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
   console.log(`req.cookies: ${req.cookies.sessID2 }`);
   if (checkhash(req.cookies.sessID2)){
     console.log(`[ID]:${req.body.deleteid}`);
@@ -106,12 +104,10 @@ router.delete('/api/postlist',async function(req,res,next){
   }
 });
 
-//ここを抜けて初めて登録が走るのでは？？という
-/***
- * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
- * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
- */
-//Todo,Cookieの仕様が固まったらconsole.logをどうにかする
+
+//テストコードを書くべきかほんとわからん
+//Jsonの中身で判定するほかないんでないの
+//TEST
 router.post('/api/login',
   passport.authenticate('local'),
   async function(req,res,next){
@@ -120,9 +116,8 @@ router.post('/api/login',
     console.log(req.isAuthenticated());
     const tokenhash:string = await makehash(req.sessionID);
     console.log(tokenhash);
-    //const expires:string = responseExpireToString(req.session.cookie.expires);
     res.cookie('sessID2',tokenhash,{
-      maxAge:10*60*1000,
+      maxAge:10*60*1000,//10分
       httpOnly:false,
     });
     res.json({});
@@ -138,20 +133,11 @@ router.post('/api/login',
     console.log(res.header);
   }
 );
-const responseExpireToString = function(req:Date|undefined):string{
-  if (req === undefined || req===null){
-    return('')
-  }else{
-    return(req.toUTCString());
-  }
-};
 
 router.delete('/api/login',function (req,res,next){
   deletesession(req.cookies.sessID2)
   req.logout();
   res.clearCookie('sessID2');
-  //todo
-  //deletesession('リクエストのcookieについてるハッシュ');
   res.json();
 });
 

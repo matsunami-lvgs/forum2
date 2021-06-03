@@ -26,12 +26,6 @@ app.use(session({
   secret: 'keyboard cat',
   resave: true,
   saveUninitialized: true,
-  //寿命は10分
-/*  cookie: {
-    maxAge: 10 * 60 * 1000,
-    secure:false,
-    httpOnly: false,
-  }*/
 }));
 
 app.use('/', indexRouter);
@@ -39,8 +33,6 @@ app.use('/', indexRouter);
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
-
 
 app.use(function(err:HttpError, req:express.Request, res:express.Response, next:express.NextFunction) {
   res.locals.message = err.message;

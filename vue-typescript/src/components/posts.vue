@@ -19,7 +19,6 @@ import axios from 'axios';
 
 export default defineComponent ({
   name: 'Posts',
-
   data() {
     return {
       kakikomi:Object,
@@ -34,11 +33,8 @@ export default defineComponent ({
     this.kakikomi=res.data;
   },
   methods:{
-
   }
-
 });
-
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
