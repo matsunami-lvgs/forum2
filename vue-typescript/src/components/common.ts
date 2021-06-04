@@ -4,12 +4,12 @@ export class inputCheck{
   private Message:string='';
   checkName(name:string){
     const maxlength=30;
-    this.isError=(maxlength>name.length);
-    this.Message+='名前が30字を超えています。';
+    this.isError=([...name].length>maxlength);
+    this.Message+='名前が30字を超えています。';;
   };
   checkBody(body:string){
     const maxlength=3000;
-    if(body.length>=maxlength){
+    if([...body].length>maxlength){
       this.isError=true;
       this.Message+='本文が3000字を超えています。';
     }else if(body===''){
