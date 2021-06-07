@@ -1,5 +1,8 @@
 module.exports = {
   verbose: true,
   collectCoverage: true,
-  testPathIgnorePatterns: ["/node_modules/", "/dist/"]
+  testPathIgnorePatterns: ["/node_modules/", "/dist/"],
+  setupFilesAfterEnv: [
+    `${process.cwd()}/jest.setup.js`
+  ]
 };

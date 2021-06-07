@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.app = void 0;
 const http_errors_1 = __importDefault(require("http-errors"));
 const express_1 = __importDefault(require("express"));
 const express_session_1 = __importDefault(require("express-session"));
@@ -11,8 +12,7 @@ const index_1 = require("./routes/index");
 const cors_1 = __importDefault(require("cors"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = express_1.default();
-app.set('views', 'views');
-app.set('view engine', 'pug');
+exports.app = app;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.static('public'));
@@ -29,12 +29,6 @@ app.use(express_session_1.default({
     secret: 'keyboard cat',
     resave: true,
     saveUninitialized: true,
-    //寿命は10分
-    /*  cookie: {
-        maxAge: 10 * 60 * 1000,
-        secure:false,
-        httpOnly: false,
-      }*/
 }));
 app.use('/', index_1.router);
 app.use(function (req, res, next) {
@@ -47,4 +41,3 @@ app.use(function (err, req, res, next) {
     console.log(err);
     res.json(err);
 });
-module.exports = app;

@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const express_1 = __importDefault(require("express"));
 const db_cliant_1 = require("./db_cliant");
-//import {login} from './authentication';
 const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = __importDefault(require("passport-local"));
 const sessiondb_cliant_1 = require("./sessiondb_cliant");
@@ -28,15 +27,7 @@ const admin = {
     username: 'kai',
     password: 'kai'
 };
-const redilectNotAuth = function (req, res, next) {
-    if (req.isAuthenticated()) {
-        return (true);
-    }
-    else {
-        return (false);
-    }
-    ;
-};
+//TEST??
 passport_1.default.use(new LocalStrategy((username, password, done) => {
     if (username === admin.username && password === admin.password) {
         console.log('Authentication Sucess');
@@ -46,6 +37,7 @@ passport_1.default.use(new LocalStrategy((username, password, done) => {
         console.log('Authentication failue');
         return done(null, false);
     }
+    ;
 }));
 passport_1.default.serializeUser((user, done) => {
     console.log('selialize...');
@@ -72,36 +64,46 @@ router.get('/api/postlist', function (req, res, next) {
 });
 router.post('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        if (bodylengthcheck(req.body.postbody) === false || namelengthcheck(req.body.postwriter) === false) {
+            res.status(400);
+            res.json();
+            return;
+        }
         console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
         console.log(req.body);
         yield db_cliant_1.insert(req.body.postwriter, req.body.postbody);
         res.json();
     });
 });
+//分岐はないがcheckhashで処理が分離している、この関数はテストやらなくてもいいんじゃないか
 router.put('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        //redilectNotAuth(req,res,next);
-        //todo
-        //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
-        if (sessiondb_cliant_1.checkhash(req.cookies.sessID2)) {
-            console.log('アップデート本文');
-            console.log(req.body.updateid, req.body.updatebody);
-            const fuga = yield db_cliant_1.updatewhereID(req.body.updateid, req.body.updatebody);
-            console.log(fuga);
-            res.json();
-        }
-        else {
+        console.log(req.cookies.sessID2);
+        console.log(req.body);
+        if ((yield sessiondb_cliant_1.checkhash(req.cookies.sessID2)) === false || bodylengthcheck(req.body.updatebody) === false) {
             res.status(401);
             res.json();
+            return;
         }
+        console.log('アップデート本文');
+        console.log(req.body.updateid, req.body.updatebody);
+        const fuga = yield db_cliant_1.updatewhereID(req.body.updateid, req.body.updatebody);
+        console.log(fuga);
+        res.json();
     });
 });
-//TODO
+//TEST
+const bodylengthcheck = (body) => {
+    const maxlength = 3000;
+    return (maxlength >= [...body].length && [...body].length > 0);
+};
+//TEST
+const namelengthcheck = (name) => {
+    const maxlength = 30;
+    return (maxlength >= [...name].length);
+};
 router.delete('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        //redilectNotAuth(req,res,next);
-        //todo
-        //if (selecthash('本当はここにcookieに保存した仮のセッションIDが入る')){
         console.log(`req.cookies: ${req.cookies.sessID2}`);
         if (sessiondb_cliant_1.checkhash(req.cookies.sessID2)) {
             console.log(`[ID]:${req.body.deleteid}`);
@@ -114,12 +116,9 @@ router.delete('/api/postlist', function (req, res, next) {
         }
     });
 });
-//ここを抜けて初めて登録が走るのでは？？という
-/***
- * Connect-pg-simpleとpassportの挙動がマジでわかんねえソース見せろ
- * 特にPassportおまじないが多すぎて引き渡し部分が全く見えない
- */
-//Todo,Cookieの仕様が固まったらconsole.logをどうにかする
+//テストコードを書くべきかほんとわからん
+//Jsonの中身で判定するほかないんでないの
+//TEST
 router.post('/api/login', passport_1.default.authenticate('local'), function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('これでどうだ');
@@ -127,7 +126,6 @@ router.post('/api/login', passport_1.default.authenticate('local'), function (re
         console.log(req.isAuthenticated());
         const tokenhash = yield sessiondb_cliant_1.makehash(req.sessionID);
         console.log(tokenhash);
-        //const expires:string = responseExpireToString(req.session.cookie.expires);
         res.cookie('sessID2', tokenhash, {
             maxAge: 10 * 60 * 1000,
             httpOnly: false,
@@ -145,20 +143,10 @@ router.post('/api/login', function (req, res, next) {
         console.log(res.header);
     });
 });
-const responseExpireToString = function (req) {
-    if (req === undefined || req === null) {
-        return ('');
-    }
-    else {
-        return (req.toUTCString());
-    }
-};
 router.delete('/api/login', function (req, res, next) {
     sessiondb_cliant_1.deletesession(req.cookies.sessID2);
     req.logout();
     res.clearCookie('sessID2');
-    //todo
-    //deletesession('リクエストのcookieについてるハッシュ');
     res.json();
 });
 router.post('/admin/reset', function (req, res, next) {

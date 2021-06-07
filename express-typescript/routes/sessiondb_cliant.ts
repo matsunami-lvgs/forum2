@@ -13,8 +13,6 @@ class Session extends Model {
   public hashid!: string;
 }
 
-
-
 Session.init(
   {
     sid: {

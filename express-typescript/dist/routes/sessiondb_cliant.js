@@ -43,27 +43,13 @@ Session.init({
 });
 //ハッシュ生成＆埋め込み
 //生成したハッシュを返す
+//TEST
 const makehash = function (postsid) {
     return __awaiter(this, void 0, void 0, function* () {
-        //とりあえず気休め程度の乱数を混ぜてみる
-        const random = Math.random().toString(36).substring(8);
-        const hash = yield crypto_1.default.createHash('sha256').update(`${postsid}${random}`).digest('hex');
+        const key = 'KHu4DPdn2vpBxKfqRJ2Fux9HwmVwX7Xy';
+        const hash = yield crypto_1.default.createHash('sha256').update(`${key}${postsid}`).digest('hex');
         console.log(hash);
         console.log(postsid);
-        console.log(typeof (hash));
-        //const Qpostid = "'"+postsid+"'";
-        //console.log(Qpostid);
-        //postid = 
-        let num = yield Session.count();
-        console.log(num);
-        /*
-        await Session.update({hashid: hash},{
-          where: {
-            sid : postsid
-          }
-        });*/
-        num = yield Session.count();
-        console.log(num);
         return hash;
     });
 };
@@ -76,23 +62,15 @@ const updatehash = function (postid, hash) {
                 sid: postid
             }
         });
-        let num = yield Session.count();
-        console.log(num);
     });
 };
 exports.updatehash = updatehash;
 //突合
+//TEST
 const checkhash = function (hash) {
     return __awaiter(this, void 0, void 0, function* () {
-        const result = yield Session.count({
-            where: { hashid: hash }
-        });
-        if (result === 1) {
-            return (true);
-        }
-        else {
-            return (false);
-        }
+        const result = yield Session.count({ where: { hashid: hash } });
+        return (result === 1);
     });
 };
 exports.checkhash = checkhash;

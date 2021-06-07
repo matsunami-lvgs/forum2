@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.create = exports.resetTable = exports.updatewhereID = exports.selectwhereID = exports.deletewhereID = exports.selectAll = exports.insert = void 0;
+exports.create = exports.resetTable = exports.updatewhereID = exports.deletewhereID = exports.selectAll = exports.insert = void 0;
 const sequelize_1 = require("sequelize");
 const dayjs_1 = __importDefault(require("dayjs"));
 const timezone_1 = __importDefault(require("dayjs/plugin/timezone"));
@@ -55,7 +55,7 @@ Posts.init({
 });
 const insert = function (inputname, inputbody) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Posts.create({ name: inputname, body: inputbody, showCreated: formatTimestamp() });
+        yield Posts.create({ name: inputname, body: inputbody, showCreated: formatTimestamp(new Date()) });
     });
 };
 exports.insert = insert;
@@ -76,18 +76,6 @@ const selectAll = function () {
     });
 };
 exports.selectAll = selectAll;
-const selectwhereID = function (postsID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const result = yield Posts.findAll({
-            attributes: ['id', 'name', 'showCreated', 'body'],
-            where: {
-                id: postsID
-            }
-        });
-        return result;
-    });
-};
-exports.selectwhereID = selectwhereID;
 const deletewhereID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.destroy({
@@ -115,8 +103,9 @@ const resetTable = function () {
     });
 };
 exports.resetTable = resetTable;
-const formatTimestamp = function () {
-    const formatted = dayjs_1.default().tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss.SSS');
+//TEST
+const formatTimestamp = function (now) {
+    const formatted = dayjs_1.default(now).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss.SSS');
     console.log(`時間は${formatted}`);
     return (formatted);
 };

@@ -24,7 +24,7 @@ passport.use(new LocalStrategy(
     }else if (username !== admin.username || password !== admin.password){
       console.log('Authentication failue');
       return done(null,false);
-    } 
+    };
   }
 ));
 
@@ -57,10 +57,10 @@ router.get('/api/postlist', async function(req, res, next) {
 });
 
 router.post('/api/postlist',async function(req,res,next){
-  if (bodylengthcheck(req.body.postwriter)&&namelengthcheck(req.body.postbody)===false){
-    res.status(400)
-    res.json
-    return
+  if (bodylengthcheck(req.body.postbody)===false||namelengthcheck(req.body.postwriter)===false){
+    res.status(400);
+    res.json();
+    return;
   }
   console.log(`[writer]:${req.body.postwriter} [body]:${req.body.postbody} [timestamp]:${new Date()}`);
   console.log(req.body);
@@ -70,7 +70,9 @@ router.post('/api/postlist',async function(req,res,next){
 
 //分岐はないがcheckhashで処理が分離している、この関数はテストやらなくてもいいんじゃないか
 router.put('/api/postlist', async function(req, res, next){
-  if (await checkhash(req.cookies.sessID2)&&bodylengthcheck(req.body.updatebody)===false){
+  console.log(req.cookies.sessID2)
+  console.log(req.body)
+  if (await checkhash(req.cookies.sessID2)===false||bodylengthcheck(req.body.updatebody)===false){
     res.status(401);
     res.json()
     return
@@ -84,13 +86,13 @@ router.put('/api/postlist', async function(req, res, next){
 //TEST
 const bodylengthcheck=(body:string):boolean=>{
 const maxlength = 3000;
-  return(maxlength>body.length&&body.length>0)
-}
+  return(maxlength>=[...body].length&&[...body].length>0)
+};
 //TEST
 const namelengthcheck=(name:string):boolean=>{
   const maxlength = 30;
-  return(maxlength>name.length)
-}
+  return(maxlength>=[...name].length)
+};
 
 router.delete('/api/postlist',async function(req,res,next){
   console.log(`req.cookies: ${req.cookies.sessID2 }`);
@@ -147,5 +149,3 @@ router.post('/admin/reset',async function(req,res,next){
 });
 
 export{router};
-
-
