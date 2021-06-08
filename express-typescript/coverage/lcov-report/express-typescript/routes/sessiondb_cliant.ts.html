@@ -135,19 +135,13 @@
 <a name='L76'></a><a href='#L76'>76</a>
 <a name='L77'></a><a href='#L77'>77</a>
 <a name='L78'></a><a href='#L78'>78</a>
-<a name='L79'></a><a href='#L79'>79</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -159,6 +153,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -182,6 +185,9 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -198,10 +204,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -214,12 +222,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Sequelize, Model, DataTypes } from 'sequelize';
-import crypto from 'crypto'
-const sequelize = new Sequelize(
-  'postgres://postgres:hoge@localhost/forum',
-  { logging: console.log }
-);
-const table_name: string = 'session'
+import crypto from 'crypto';
+const sequelize = new Sequelize('postgres://postgres:hoge@localhost/forum', {
+  logging: console.log,
+});
+const table_name: string = 'session';
 &nbsp;
 class Session extends Model {
   public sid!: string;
@@ -231,19 +238,19 @@ class Session extends Model {
 Session.init(
   {
     sid: {
-      type: new DataTypes.STRING,
+      type: new DataTypes.STRING(),
       primaryKey: true,
     },
     sess: {
-      type: new DataTypes.STRING,
+      type: new DataTypes.STRING(),
       allowNull: false,
     },
     expire: {
-      type: new DataTypes.DATE,
+      type: new DataTypes.DATE(),
       allowNull: false,
     },
     hashid: {
-      type: new DataTypes.STRING,
+      type: new DataTypes.STRING(),
       allowNull: true,
     },
   },
@@ -258,8 +265,11 @@ Session.init(
 //生成したハッシュを返す
 //TEST
 const makehash = <span class="fstat-no" title="function not covered" >as</span>ync function (postsid: string) {
-  const key:string = <span class="cstat-no" title="statement not covered" >'KHu4DPdn2vpBxKfqRJ2Fux9HwmVwX7Xy'; </span>
-  const hash: string = <span class="cstat-no" title="statement not covered" >await crypto.createHash('sha256').update(`${key}${postsid}`).digest('hex');</span>
+  const key: string = <span class="cstat-no" title="statement not covered" >'KHu4DPdn2vpBxKfqRJ2Fux9HwmVwX7Xy';</span>
+  const hash: string = <span class="cstat-no" title="statement not covered" >await crypto</span>
+    .createHash('sha256')
+    .update(`${key}${postsid}`)
+    .digest('hex');
 <span class="cstat-no" title="statement not covered" >  console.log(hash);</span>
 <span class="cstat-no" title="statement not covered" >  console.log(postsid);</span>
 <span class="cstat-no" title="statement not covered" >  return hash;</span>
@@ -267,26 +277,28 @@ const makehash = <span class="fstat-no" title="function not covered" >as</span>y
 &nbsp;
 const updatehash = <span class="fstat-no" title="function not covered" >as</span>ync function (postid: string, hash: string) {
 <span class="cstat-no" title="statement not covered" >  console.log('あっぷでーと！');</span>
-<span class="cstat-no" title="statement not covered" >  await Session.update({ hashid: hash }, {</span>
-    where: {
-      sid: postid
+<span class="cstat-no" title="statement not covered" >  await Session.update(</span>
+    { hashid: hash },
+    {
+      where: {
+        sid: postid,
+      },
     }
-  })
+  );
 };
 &nbsp;
 //突合
 //TEST
 const checkhash = async function (hash: string) {
-  const result: number = await Session.count({where: { hashid: hash }})
-<span class="cstat-no" title="statement not covered" >  return (result===1);</span>
+  const result: number = await Session.count({ where: { hashid: hash } });
+<span class="cstat-no" title="statement not covered" >  return result === 1;</span>
 };
-&nbsp;
 &nbsp;
 const deletesession = <span class="fstat-no" title="function not covered" >as</span>ync function (hash: string) {
 <span class="cstat-no" title="statement not covered" >  await Session.destroy({</span>
     where: {
-      hashid: hash
-    }
+      hashid: hash,
+    },
   });
 };
 &nbsp;
@@ -298,7 +310,7 @@ export { makehash, updatehash, checkhash, deletesession };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Mon Jun 07 2021 19:32:19 GMT+0900 (Japan Standard Time)
+                at Tue Jun 08 2021 10:49:52 GMT+0900 (Japan Standard Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

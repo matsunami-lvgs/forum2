@@ -9,6 +9,7 @@ const char3001:string = `${char30.repeat(100)}0`;
 const testhash:string = 'testhash';
 app.use(cookieParser());
 
+
 describe('ルーティングのテスト',()=>{
   /*
   test('get',async ()=>{
@@ -93,7 +94,7 @@ describe('ルーティングのテスト',()=>{
       res:express.Response,
       next:express.NextFunction
     )=>{
-      res.set('cookies',['sessID2',testhash])
+      res.set('Cookie',`sessID2=${testhash}`)
       res.write(req.body.updatebody,req.body.updateid);
       res.end()
     });
