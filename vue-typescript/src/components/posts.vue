@@ -1,39 +1,38 @@
 <template>
-  <ul class = "Posts">
+  <ul class="Posts">
     <div v-for="kakikomi in kakikomi">
-        <id class="kakikomielement">{{kakikomi.id}}</id>
-        <name class="kakikomielement">投稿者: {{kakikomi.name}}</name> 
-        <time class="kakikomielement">投稿時間: {{kakikomi.showCreated}}</time>
-          <br>
-          <postbody v-model="kbody">{{kakikomi.body}}</postbody>
+      <id class="kakikomielement">{{ kakikomi.id }}</id>
+      <name class="kakikomielement">投稿者: {{ kakikomi.name }}</name>
+      <time class="kakikomielement">投稿時間: {{ kakikomi.showCreated }}</time>
+      <br />
+      <postbody v-model="kbody">{{ kakikomi.body }}</postbody>
       <p></p>
-      <hr>
+      <hr />
     </div>
   </ul>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import { defineComponent ,} from 'vue';
+import { defineComponent } from 'vue';
 import axios from 'axios';
 
-export default defineComponent ({
+export default defineComponent({
   name: 'Posts',
   data() {
     return {
-      kakikomi:Object,
-      isUpdate:0,
-      ubody:'',
-      kbody:''
+      kakikomi: Object,
+      isUpdate: 0,
+      ubody: '',
+      kbody: '',
     };
   },
   async mounted() {
-    const res= await axios.get('/api/postlist');
+    const res = await axios.get('/api/postlist');
     console.log(res);
-    this.kakikomi=res.data;
+    this.kakikomi = res.data;
   },
-  methods:{
-  }
+  methods: {},
 });
 </script>
 
@@ -53,19 +52,18 @@ li {
 a {
   color: #42b983;
 }
-.Posts{
+.Posts {
   white-space: pre-wrap;
   text-align: left;
 }
-.kakikomielement{
+.kakikomielement {
   margin-right: 7px;
 }
 name {
   color: blue;
 }
-postbody{
+postbody {
   font-size: 115%;
   color: black;
 }
-
 </style>

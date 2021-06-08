@@ -1,13 +1,13 @@
 <template>
-  <div v-if="isLogin===true">
-    <Logout @setLogout="setLogout" v-on:reload="reload()"/>
+  <div v-if="isLogin === true">
+    <Logout @setLogout="setLogout" v-on:reload="reload()" />
   </div>
   <div v-else>
-    <Login  @setLogin="setLogin" v-on:reload="reload()"/>
+    <Login @setLogin="setLogin" v-on:reload="reload()" />
   </div>
-  <h1>{{title}}</h1>
-  <div v-if="isLogin===true" class="posts">
-    <PostsAdmin :key="resetKey" v-on:reload="reload()"/>
+  <h1>{{ title }}</h1>
+  <div v-if="isLogin === true" class="posts">
+    <PostsAdmin :key="resetKey" v-on:reload="reload()" />
   </div>
   <div v-else class="posts">
     <Posts :key="resetKey" v-on:reload="reload()" />
@@ -26,38 +26,37 @@ import Login from './components/login.vue';
 import Logout from './components/logout.vue';
 import PostingForm from './components/form.vue';
 
-
 export default defineComponent({
   name: 'App',
-  components:{
+  components: {
     Login,
     Logout,
     Posts,
     PostsAdmin,
     PostingForm,
   },
-  data(){
-    return{
-      title:'けいじばん',
+  data() {
+    return {
+      title: 'けいじばん',
       resetKey: 0,
-      isLogin:false
-    }
+      isLogin: false,
+    };
   },
   /*
   created(){
     this.isLogin=false;
   },*/
-  methods:{
-    reload(){
+  methods: {
+    reload() {
       this.resetKey++;
     },
-    setLogin(){
-      this.isLogin=true;
+    setLogin() {
+      this.isLogin = true;
     },
-    setLogout(){
-      this.isLogin=false;
-    }
-  }
+    setLogout() {
+      this.isLogin = false;
+    },
+  },
 });
 </script>
 
@@ -71,11 +70,10 @@ export default defineComponent({
   margin-top: 30px;
   margin-bottom: 60px;
 }
-.posts{
+.posts {
   margin-left: auto;
   margin-right: auto;
-  max-width:700px;
+  max-width: 700px;
   overflow-wrap: break-all;
 }
-
 </style>
