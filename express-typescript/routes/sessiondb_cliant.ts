@@ -68,7 +68,7 @@ const updatehash = async function (postid: string, hash: string) {
 //TEST
 const checkhash = async function (hash: string) {
   const result: number = await Session.count({ where: { hashid: hash } });
-  return result === 1;
+  return (result === 1);
 };
 
 const deletesession = async function (hash: string) {

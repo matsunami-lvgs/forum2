@@ -25,7 +25,7 @@ class Posts extends sequelize_1.Model {
 }
 Posts.init({
     id: {
-        type: new sequelize_1.DataTypes.INTEGER,
+        type: new sequelize_1.DataTypes.INTEGER(),
         primaryKey: true,
         autoIncrement: true,
     },
@@ -34,19 +34,19 @@ Posts.init({
         allowNull: true,
     },
     body: {
-        type: new sequelize_1.DataTypes.TEXT,
+        type: new sequelize_1.DataTypes.TEXT(),
         allowNull: false,
     },
     showCreated: {
-        type: new sequelize_1.DataTypes.STRING,
+        type: new sequelize_1.DataTypes.STRING(),
         allowNull: false,
     },
     createdAt: {
-        type: new sequelize_1.DataTypes.DATE,
+        type: new sequelize_1.DataTypes.DATE(),
         allowNull: false,
     },
     updatedAt: {
-        type: new sequelize_1.DataTypes.DATE,
+        type: new sequelize_1.DataTypes.DATE(),
         allowNull: false,
     },
 }, {
@@ -55,7 +55,11 @@ Posts.init({
 });
 const insert = function (inputname, inputbody) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield Posts.create({ name: inputname, body: inputbody, showCreated: formatTimestamp(new Date()) });
+        yield Posts.create({
+            name: inputname,
+            body: inputbody,
+            showCreated: formatTimestamp(new Date()),
+        });
     });
 };
 exports.insert = insert;
@@ -70,9 +74,9 @@ const selectAll = function () {
     return __awaiter(this, void 0, void 0, function* () {
         const result = yield Posts.findAll({
             attributes: ['id', 'name', 'showCreated', 'body'],
-            order: [['id', 'ASC']]
+            order: [['id', 'ASC']],
         });
-        return (result);
+        return result;
     });
 };
 exports.selectAll = selectAll;
@@ -80,8 +84,8 @@ const deletewhereID = function (postsID) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Posts.destroy({
             where: {
-                id: postsID
-            }
+                id: postsID,
+            },
         });
     });
 };
@@ -91,8 +95,8 @@ const updatewhereID = function (postID, postBody) {
         console.log(postBody);
         yield Posts.update({ body: postBody }, {
             where: {
-                id: postID
-            }
+                id: postID,
+            },
         });
     });
 };
@@ -105,7 +109,9 @@ const resetTable = function () {
 exports.resetTable = resetTable;
 //TEST
 const formatTimestamp = function (now) {
-    const formatted = dayjs_1.default(now).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss.SSS');
+    const formatted = dayjs_1.default(now)
+        .tz('Asia/Tokyo')
+        .format('YYYY/MM/DD HH:mm:ss.SSS');
     console.log(`時間は${formatted}`);
-    return (formatted);
+    return formatted;
 };

@@ -1,6 +1,6 @@
 import  express from 'express';
 import supertest from 'supertest';
-import  {app} from '../app';
+const app = require('../app');
 import cookieParser from 'cookie-parser';
 const char30:string = '123456789012345678901234567890';
 const char31:string = '1234567890123456789012345678901';

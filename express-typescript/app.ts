@@ -48,4 +48,4 @@ app.use(function (
   res.json(err);
 });
 
-export { app };
+module.exports = app;

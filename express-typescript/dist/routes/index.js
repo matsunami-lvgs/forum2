@@ -25,7 +25,7 @@ exports.router = router;
 //ここから認証の設定
 const admin = {
     username: 'kai',
-    password: 'kai'
+    password: 'kai',
 };
 //TEST??
 passport_1.default.use(new LocalStrategy((username, password, done) => {
@@ -37,7 +37,6 @@ passport_1.default.use(new LocalStrategy((username, password, done) => {
         console.log('Authentication failue');
         return done(null, false);
     }
-    ;
 }));
 passport_1.default.serializeUser((user, done) => {
     console.log('selialize...');
@@ -64,7 +63,8 @@ router.get('/api/postlist', function (req, res, next) {
 });
 router.post('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (bodylengthcheck(req.body.postbody) === false || namelengthcheck(req.body.postwriter) === false) {
+        if (bodylengthcheck(req.body.postbody) === false ||
+            namelengthcheck(req.body.postwriter) === false) {
             res.status(400);
             res.json();
             return;
@@ -80,7 +80,8 @@ router.put('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(req.cookies.sessID2);
         console.log(req.body);
-        if ((yield sessiondb_cliant_1.checkhash(req.cookies.sessID2)) === false || bodylengthcheck(req.body.updatebody) === false) {
+        if ((yield sessiondb_cliant_1.checkhash(req.cookies.sessID2)) === false ||
+            bodylengthcheck(req.body.updatebody) === false) {
             res.status(401);
             res.json();
             return;
@@ -95,17 +96,17 @@ router.put('/api/postlist', function (req, res, next) {
 //TEST
 const bodylengthcheck = (body) => {
     const maxlength = 3000;
-    return (maxlength >= [...body].length && [...body].length > 0);
+    return maxlength >= [...body].length && [...body].length > 0;
 };
 //TEST
 const namelengthcheck = (name) => {
     const maxlength = 30;
-    return (maxlength >= [...name].length);
+    return maxlength >= [...name].length;
 };
 router.delete('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(`req.cookies: ${req.cookies.sessID2}`);
-        if (sessiondb_cliant_1.checkhash(req.cookies.sessID2)) {
+        if (yield sessiondb_cliant_1.checkhash(req.cookies.sessID2)) {
             console.log(`[ID]:${req.body.deleteid}`);
             yield db_cliant_1.deletewhereID(req.body.deleteid);
             res.json();

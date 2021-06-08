@@ -75,5 +75,6 @@ export default defineComponent({
   margin-right: auto;
   max-width: 700px;
   overflow-wrap: break-all;
+  word-break: break-all;
 }
 </style>

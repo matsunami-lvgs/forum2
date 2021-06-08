@@ -115,7 +115,7 @@ const namelengthcheck = (name: string): boolean => {
 
 router.delete('/api/postlist', async function (req, res, next) {
   console.log(`req.cookies: ${req.cookies.sessID2}`);
-  if (checkhash(req.cookies.sessID2)) {
+  if (await checkhash(req.cookies.sessID2)) {
     console.log(`[ID]:${req.body.deleteid}`);
     await deletewhereID(req.body.deleteid);
     res.json();

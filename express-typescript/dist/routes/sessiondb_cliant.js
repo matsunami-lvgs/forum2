@@ -15,25 +15,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletesession = exports.checkhash = exports.updatehash = exports.makehash = void 0;
 const sequelize_1 = require("sequelize");
 const crypto_1 = __importDefault(require("crypto"));
-const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum', { logging: console.log });
+const sequelize = new sequelize_1.Sequelize('postgres://postgres:hoge@localhost/forum', {
+    logging: console.log,
+});
 const table_name = 'session';
 class Session extends sequelize_1.Model {
 }
 Session.init({
     sid: {
-        type: new sequelize_1.DataTypes.STRING,
+        type: new sequelize_1.DataTypes.STRING(),
         primaryKey: true,
     },
     sess: {
-        type: new sequelize_1.DataTypes.STRING,
+        type: new sequelize_1.DataTypes.STRING(),
         allowNull: false,
     },
     expire: {
-        type: new sequelize_1.DataTypes.DATE,
+        type: new sequelize_1.DataTypes.DATE(),
         allowNull: false,
     },
     hashid: {
-        type: new sequelize_1.DataTypes.STRING,
+        type: new sequelize_1.DataTypes.STRING(),
         allowNull: true,
     },
 }, {
@@ -47,7 +49,10 @@ Session.init({
 const makehash = function (postsid) {
     return __awaiter(this, void 0, void 0, function* () {
         const key = 'KHu4DPdn2vpBxKfqRJ2Fux9HwmVwX7Xy';
-        const hash = yield crypto_1.default.createHash('sha256').update(`${key}${postsid}`).digest('hex');
+        const hash = yield crypto_1.default
+            .createHash('sha256')
+            .update(`${key}${postsid}`)
+            .digest('hex');
         console.log(hash);
         console.log(postsid);
         return hash;
@@ -59,8 +64,8 @@ const updatehash = function (postid, hash) {
         console.log('あっぷでーと！');
         yield Session.update({ hashid: hash }, {
             where: {
-                sid: postid
-            }
+                sid: postid,
+            },
         });
     });
 };
@@ -78,8 +83,8 @@ const deletesession = function (hash) {
     return __awaiter(this, void 0, void 0, function* () {
         yield Session.destroy({
             where: {
-                hashid: hash
-            }
+                hashid: hash,
+            },
         });
     });
 };
