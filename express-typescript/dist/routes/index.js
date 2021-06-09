@@ -96,12 +96,12 @@ router.put('/api/postlist', function (req, res, next) {
 //TEST
 const bodylengthcheck = (body) => {
     const maxlength = 3000;
-    return maxlength >= [...body].length && [...body].length > 0;
+    return maxlength >= body.length && body.length > 0;
 };
 //TEST
 const namelengthcheck = (name) => {
     const maxlength = 30;
-    return maxlength >= [...name].length;
+    return maxlength >= name.length;
 };
 router.delete('/api/postlist', function (req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {

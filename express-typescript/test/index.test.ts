@@ -6,8 +6,7 @@ const char30:string = '123456789012345678901234567890';
 const char31:string = '1234567890123456789012345678901';
 const char3000:string = char30.repeat(100);
 const char3001:string = `${char30.repeat(100)}0`;
-const testhash:string = 'testhash';
-app.use(cookieParser());
+const truehash:string = 'testhash';
 
 
 describe('ルーティングのテスト',()=>{
@@ -94,12 +93,39 @@ describe('ルーティングのテスト',()=>{
       res:express.Response,
       next:express.NextFunction
     )=>{
-      res.set('Cookie',`sessID2=${testhash}`)
       res.write(req.body.updatebody,req.body.updateid);
       res.end()
     });
     const request = supertest(app);
-    const response = await request.put('/api/postlist').send({postbody:char3000,updateid:50});
+    const response = await request.put('/api/postlist').set('Cookie',`sessID2=${truehash}`).send({updatebody:char3000,updateid:50});
     expect(response.status).toBe(200);
+  });
+  test ('putbody',async()=>{
+    app.put('/',
+    (
+      req:express.Request,
+      res:express.Response,
+      next:express.NextFunction
+    )=>{
+      res.write(req.body.updatebody,req.body.updateid);
+      res.end()
+    });
+    const request = supertest(app);
+    const response = await request.put('/api/postlist').set('Cookie',`sessID2=errorhash`).send({updatebody:char3000,updateid:50});
+    expect(response.status).toBe(401);
+  });
+  test ('putbody',async()=>{
+    app.delete('/',
+    (
+      req:express.Request,
+      res:express.Response,
+      next:express.NextFunction
+    )=>{
+      res.write(req.body.updatebody,req.body.updateid);
+      res.end()
+    });
+    const request = supertest(app);
+    const response = await request.delete('/api/postlist').set('Cookie',`sessID2=errorhash`).send({updatebody:char3000,updateid:50});
+    expect(response.status).toBe(401);
   });
 })

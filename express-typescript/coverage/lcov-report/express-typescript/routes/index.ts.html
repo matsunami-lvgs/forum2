@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25.61% </span>
+                <span class="strong">37.8% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>21/82</span>
+                <span class='fraction'>31/82</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/20</span>
+                <span class='fraction'>6/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">7.69% </span>
+                <span class="strong">15.38% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/13</span>
+                <span class='fraction'>2/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">25.61% </span>
+                <span class="strong">37.8% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>21/82</span>
+                <span class='fraction'>31/82</span>
             </div>
         
             
@@ -313,26 +313,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -485,32 +485,32 @@ router.put('/api/postlist', async function (req, res, next) {
   console.log(req.body);
   if (
     (await checkhash(req.cookies.sessID2)) === false ||
-<span class="branch-1 cbranch-no" title="branch not covered" >    bodylengthcheck(req.body.updatebody) === false</span>
+    bodylengthcheck(req.body.updatebody) === false
   ) {
-<span class="cstat-no" title="statement not covered" >    res.status(401);</span>
-<span class="cstat-no" title="statement not covered" >    res.json();</span>
-<span class="cstat-no" title="statement not covered" >    return;</span>
+    res.status(401);
+    res.json();
+    return;
   }
-<span class="cstat-no" title="statement not covered" >  console.log('アップデート本文');</span>
-<span class="cstat-no" title="statement not covered" >  console.log(req.body.updateid, req.body.updatebody);</span>
-  const fuga = <span class="cstat-no" title="statement not covered" >await updatewhereID(req.body.updateid, req.body.updatebody);</span>
-<span class="cstat-no" title="statement not covered" >  console.log(fuga);</span>
-<span class="cstat-no" title="statement not covered" >  res.json();</span>
+  console.log('アップデート本文');
+  console.log(req.body.updateid, req.body.updatebody);
+  const fuga = await updatewhereID(req.body.updateid, req.body.updatebody);
+  console.log(fuga);
+  res.json();
 });
 //TEST
-const bodylengthcheck = <span class="fstat-no" title="function not covered" >(b</span>ody: string): boolean =&gt; {
-  const maxlength = <span class="cstat-no" title="statement not covered" >3000;</span>
-<span class="cstat-no" title="statement not covered" >  return maxlength &gt;= [...body].length &amp;&amp; [...body].length &gt; 0;</span>
+const bodylengthcheck = (body: string): boolean =&gt; {
+  const maxlength = 3000;
+  return maxlength &gt;= body.length &amp;&amp; body.length &gt; 0;
 };
 //TEST
 const namelengthcheck = <span class="fstat-no" title="function not covered" >(n</span>ame: string): boolean =&gt; {
   const maxlength = <span class="cstat-no" title="statement not covered" >30;</span>
-<span class="cstat-no" title="statement not covered" >  return maxlength &gt;= [...name].length;</span>
+<span class="cstat-no" title="statement not covered" >  return maxlength &gt;= name.length;</span>
 };
 &nbsp;
 router.delete('/api/postlist', <span class="fstat-no" title="function not covered" >as</span>ync function (req, res, next) {
 <span class="cstat-no" title="statement not covered" >  console.log(`req.cookies: ${req.cookies.sessID2}`);</span>
-<span class="cstat-no" title="statement not covered" >  if (checkhash(req.cookies.sessID2)) {</span>
+<span class="cstat-no" title="statement not covered" >  if (await checkhash(req.cookies.sessID2)) {</span>
 <span class="cstat-no" title="statement not covered" >    console.log(`[ID]:${req.body.deleteid}`);</span>
 <span class="cstat-no" title="statement not covered" >    await deletewhereID(req.body.deleteid);</span>
 <span class="cstat-no" title="statement not covered" >    res.json();</span>
@@ -568,7 +568,7 @@ export { router };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Jun 08 2021 10:49:52 GMT+0900 (Japan Standard Time)
+                at Tue Jun 08 2021 13:41:44 GMT+0900 (Japan Standard Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

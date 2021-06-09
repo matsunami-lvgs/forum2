@@ -81,6 +81,9 @@ export default defineComponent({
         alert(err.message);
       }
     },
+    //デフォルト：書き込み欄をオープンする番号は0。どの書き込みも編集状態にならない
+    //クリック：クリックした書き込み番号の編集欄がオープン。
+    //オープンした状態で同じ編集ボタンをクリック：書き込み番号がになる。
     updateSelect(id: number, name: string) {
       if (this.isUpdate === id) {
         this.isUpdate = 0;
