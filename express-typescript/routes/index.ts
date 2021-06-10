@@ -145,6 +145,7 @@ router.post(
     next();
   }
 );
+
 router.post('/api/login', async function (req, res, next) {
   const hash: string = await makehash(req.sessionID);
   await updatehash(req.sessionID, hash);

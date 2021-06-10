@@ -6,14 +6,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import axios from 'axios';
+import {deletelogin} from './request';
 
 export default defineComponent({
   name: 'Logout',
-  data() {},
   methods: {
     logoutRequest: async function () {
-      const res = await axios.delete('/api/login');
+      const res = deletelogin();
       this.$emit('setLogout');
     },
   },

@@ -13,9 +13,8 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
 import { defineComponent } from 'vue';
-import axios from 'axios';
+import {getposts} from './request';
 
 export default defineComponent({
   name: 'Posts',
@@ -28,11 +27,10 @@ export default defineComponent({
     };
   },
   async mounted() {
-    const res = await axios.get('/api/postlist');
+    const res = await getposts();
     console.log(res);
     this.kakikomi = res.data;
   },
-  methods: {},
 });
 </script>
 

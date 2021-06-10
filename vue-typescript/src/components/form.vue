@@ -13,10 +13,9 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
 import { defineComponent } from 'vue';
-import axios from 'axios';
-import { inputCheck } from './common';
+import { nameCheck,bodyCheck } from './errorcheck';
+import {postposts} from './request'
 export default defineComponent({
   name: 'PostingForm',
   data() {
@@ -28,29 +27,15 @@ export default defineComponent({
   methods: {
     postRequest: async function (pwriter: string, pbody: string) {
       try {
-        const inputcheck = new inputCheck();
-        inputcheck.checkName(pwriter);
-        inputcheck.checkBody(pbody);
-        if (inputcheck.getError()) {
-          throw new Error(inputcheck.getMessage());
-        }
-        axios.interceptors.request.use((request) => {
-          console.log('Starting Request: ', request);
-          return request;
-        });
-        await axios.post(
-          '/api/postlist',
-          {
-            postwriter: pwriter,
-            postbody: pbody,
-          },
-          {
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
+        const namecheck = new nameCheck(pwriter);
+        const bodycheck = new bodyCheck(pbody);
+        if (bodycheck.iscorrect===false||namecheck.iscorrect===false) {
+          throw new Error(`${bodycheck.message}${namecheck.message}`);
+        };
+        const res = postposts(pwriter,pbody)
         this.$emit('reload');
       } catch (err) {
-        alert(err.message);
+        alert(`${err}`);
       }
     },
   },

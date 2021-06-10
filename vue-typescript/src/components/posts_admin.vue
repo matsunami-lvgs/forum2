@@ -20,7 +20,6 @@
       </button>
       <br />
       <postbody v-model="kbody">{{ kakikomi.body }}</postbody>
-
       <update v-if="isUpdate === kakikomi.id">
         <br />
         <textarea v-model="ubody"></textarea>
@@ -43,8 +42,8 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { defineComponent } from 'vue';
-import axios from 'axios';
-import { inputCheck } from './common';
+import {getposts,putposts,deleteposts} from './request';
+import { bodyCheck } from './errorcheck';
 
 export default defineComponent({
   name: 'PostsAdmin',
@@ -57,30 +56,11 @@ export default defineComponent({
     };
   },
   async mounted() {
-    const items = await axios.get('/api/postlist');
+    const items = await getposts();
     console.log(items);
     this.kakikomi = items.data;
-    //const checkLogin = await axios.get('http://localhost:5000/checklogin');
-    //console.log(checkLogin);
   },
   methods: {
-    async deletePost(postid: number, postbody: string) {
-      try {
-        if (confirm(`この書き込みを削除しますか？\n${postid}: ${postbody}`)) {
-          const res = await axios.delete('/api/postlist', {
-            data: { deleteid: postid },
-          });
-          if (res.status === 401) {
-            //何らかのエラー処理
-          }
-          this.$emit('reload');
-        } else {
-          //何もしない
-        }
-      } catch (err) {
-        alert(err.message);
-      }
-    },
     //デフォルト：書き込み欄をオープンする番号は0。どの書き込みも編集状態にならない
     //クリック：クリックした書き込み番号の編集欄がオープン。
     //オープンした状態で同じ編集ボタンをクリック：書き込み番号がになる。
@@ -94,28 +74,26 @@ export default defineComponent({
     },
     async updatePost(id: number, ubody: string) {
       try {
-        const inputcheck = new inputCheck();
-        inputcheck.checkBody(ubody);
-        if (inputcheck.getError()) {
-          throw new Error(inputcheck.getMessage());
+        const bodycheck = new bodyCheck(ubody);
+        if (bodycheck.iscorrect===false) {
+          throw new Error(bodycheck.message);
         }
-        console.log(id);
-        console.log(ubody);
-        //サーバーがわにハッシュを渡して向こうで処理する、401で帰ってきたらなんか見せる
-        const res = await axios.put(
-          '/api/postlist',
-          {
-            updateid: id,
-            updatebody: ubody,
-          },
-          {
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
+        const res = await putposts(id,ubody)
       } catch (err) {
         alert(err.message);
       }
       this.$emit('reload');
+    },
+    async deletePost(postid: number, postbody: string) {
+      try {
+        if (confirm(`この書き込みを削除しますか？\n${postid}: ${postbody}`)===false) {
+          return
+        } 
+        const res = await deleteposts(postid)
+        this.$emit('reload');
+      } catch (err) {
+        alert(err.message);
+      }
     },
   },
 });

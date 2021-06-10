@@ -14,10 +14,9 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
 import { defineComponent } from 'vue';
-import axios from 'axios';
-import cookie from 'vue-cookies';
+import {userNameCheck, passCheck} from './errorcheck';
+import {postlogin} from './request'
 
 export default defineComponent({
   name: 'Login',
@@ -31,33 +30,19 @@ export default defineComponent({
   methods: {
     loginRequest: async function (username: string, password: string) {
       try {
-        console.log(`username:${username},password:${password}`);
-        if (username === '' || password === '') {
-          throw new Error('認証に必要な項目が不足しています');
+        const usernamecheck = new userNameCheck(username);
+        const passcheck = new passCheck(password)
+        if (usernamecheck.iscorrect==false||passcheck.iscorrect===false){
+          throw new Error (`${usernamecheck.message}${passcheck.message}`);
         }
-        const res = await axios.post(
-          '/api/login',
-          {
-            username: username,
-            password: password,
-            withCredentials: true,
-          },
-          {
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
-        console.log(res.data);
+        const res = await postlogin(username,password)
         if (res.status === 200) {
-          const expires: string = res.data.expires;
-          const sessID: string = res.data.sessID;
-          console.log(sessID);
-          console.log(expires);
           this.$emit('setLogin');
         } else {
           throw new Error('認証に失敗しました');
         }
       } catch (err) {
-        alert('認証に失敗しました');
+        alert(err);
       }
     },
   },
