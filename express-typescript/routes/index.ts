@@ -55,7 +55,7 @@ router.use(passport.session());
 //ここまで認証の設定
 
 /* GET home page. */
-router.get('/api/postlist', async function (req, res, next) {
+router.get('/api/timeline', async function (req, res, next) {
   const posts: Object = await selectAll();
   console.log(`Received a request  ${new Date()}`);
   console.log(`req.usr: ${req.user}`);
@@ -65,7 +65,7 @@ router.get('/api/postlist', async function (req, res, next) {
   res.json(Object.values(posts));
 });
 
-router.post('/api/postlist', async function (req, res, next) {
+router.post('/api/timeline', async function (req, res, next) {
   if (
     bodylengthcheck(req.body.postbody) === false ||
     namelengthcheck(req.body.postwriter) === false
@@ -85,7 +85,7 @@ router.post('/api/postlist', async function (req, res, next) {
 });
 
 //分岐はないがcheckhashで処理が分離している、この関数はテストやらなくてもいいんじゃないか
-router.put('/api/postlist', async function (req, res, next) {
+router.put('/api/timeline', async function (req, res, next) {
   console.log(req.cookies.sessID2);
   console.log(req.body);
   if (
@@ -113,7 +113,7 @@ const namelengthcheck = (name: string): boolean => {
   return maxlength >= name.length;
 };
 
-router.delete('/api/postlist', async function (req, res, next) {
+router.delete('/api/timeline', async function (req, res, next) {
   console.log(`req.cookies: ${req.cookies.sessID2}`);
   if (await checkhash(req.cookies.sessID2)) {
     console.log(`[ID]:${req.body.deleteid}`);

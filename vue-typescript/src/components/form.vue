@@ -15,7 +15,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { nameCheck,bodyCheck } from './errorcheck';
-import {postposts} from './request'
+import {posttimeline} from './request'
 export default defineComponent({
   name: 'PostingForm',
   data() {
@@ -32,7 +32,7 @@ export default defineComponent({
         if (bodycheck.iscorrect===false||namecheck.iscorrect===false) {
           throw new Error(`${bodycheck.message}${namecheck.message}`);
         };
-        const res = postposts(pwriter,pbody)
+        const res = posttimeline(pwriter,pbody)
         this.$emit('reload');
       } catch (err) {
         alert(`${err}`);

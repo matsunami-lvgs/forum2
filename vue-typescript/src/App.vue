@@ -6,13 +6,13 @@
     <Login @setLogin="setLogin" v-on:reload="reload()" />
   </div>
   <h1>{{ title }}</h1>
-  <div v-if="isLogin === true" class="posts">
-    <PostsAdmin :key="resetKey" v-on:reload="reload()" />
+  <div v-if="isLogin === true" class="timeline">
+    <TimelineAdmin :key="resetKey" v-on:reload="reload()" />
   </div>
-  <div v-else class="posts">
-    <Posts :key="resetKey" v-on:reload="reload()" />
+  <div v-else class="timeline">
+    <Timeline :key="resetKey" v-on:reload="reload()" />
   </div>
-  <div class="posts">
+  <div class="timeline">
     <PostingForm v-on:reload="reload()" />
   </div>
 </template>
@@ -20,8 +20,8 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import { defineComponent } from 'vue';
-import Posts from './components/posts.vue';
-import PostsAdmin from './components/posts_admin.vue';
+import Timeline from './components/timeline.vue';
+import TimelineAdmin from './components/timeline_admin.vue';
 import Login from './components/login.vue';
 import Logout from './components/logout.vue';
 import PostingForm from './components/form.vue';
@@ -31,8 +31,8 @@ export default defineComponent({
   components: {
     Login,
     Logout,
-    Posts,
-    PostsAdmin,
+    Timeline,
+    TimelineAdmin,
     PostingForm,
   },
   data() {
@@ -70,7 +70,7 @@ export default defineComponent({
   margin-top: 30px;
   margin-bottom: 60px;
 }
-.posts {
+.timeline {
   margin-left: auto;
   margin-right: auto;
   max-width: 700px;

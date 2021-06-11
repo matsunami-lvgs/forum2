@@ -1,17 +1,17 @@
 
 
 import axios, { AxiosResponse } from 'axios';
-const postlist:string = '/api/postlist';
+const timeline:string = '/api/timeline';
 const login = '/api/login';
 
-export const getposts=async():Promise<AxiosResponse<any>>=>{
-  const hoge = await axios.get(postlist) 
+export const gettimeline=async():Promise<AxiosResponse<any>>=>{
+  const hoge = await axios.get(timeline) 
   return(hoge)
 }
 
-export const postposts =async(name:string,body:string):Promise<AxiosResponse>=>{
+export const posttimeline =async(name:string,body:string):Promise<AxiosResponse>=>{
   return(await axios.post(
-  postlist,
+  timeline,
   {
     postwriter: name,
     postbody: body,
@@ -21,9 +21,9 @@ export const postposts =async(name:string,body:string):Promise<AxiosResponse>=>{
   }))
 };
 
-export const putposts =async(id:number,body:string):Promise<AxiosResponse>=> {
+export const puttimeline =async(id:number,body:string):Promise<AxiosResponse>=> {
   return(await axios.put(
-  postlist,
+  timeline,
   {
     updateid: id,
     updatebody: body,
@@ -33,9 +33,9 @@ export const putposts =async(id:number,body:string):Promise<AxiosResponse>=> {
   }))
 };
 
-export const deleteposts =async(id:number):Promise<AxiosResponse>=> {
+export const deletetimeline =async(id:number):Promise<AxiosResponse>=> {
   return(await axios.delete(
-  postlist, {
+  timeline, {
   data: { deleteid: id },
   }
 ))};
