@@ -16,46 +16,37 @@ import {
 
 import {checkhash} from './sessiondb_cliant'
 
-export class insertTimeline {
-  iscorrect;
-  //status;
-  private name:string;
-  private body:string;
+
+export class posttimeline{
   constructor(name:string,body:string){
-    this.name = name;
-    this.body = body;
-    this.iscorrect = bodycheck(body).iscorrect&&namecheck(name).iscorrect
-    //this.status = bodycheck
+    this.insert = new insert(name,body)
+    this.iscorrect = x
   }
-  insertinput =()=>{
-    if (this.iscorrect){
-      insert(this.name,this.body)
-      return true
-    }else{
-      return false 
-    }
-  };
+  iscorrect:boolean;
+  insert;
 }
 
-const bodycheck=(body:string):inputcheck=>{
-  const maxlength=3000
-  if(maxlength >= body.length && body.length !==0){
-    return{iscorrect:true,status:200}
-  }else{
-    return{iscorrect:false,status:400}
+class bodycheck{
+  iscorrect:boolean;
+  constructor(body:string){
+    this.iscorrect=this.checklength(body)
+  }
+  private checklength =(body:string)=>{
+    const maxlength=3000
+    return(maxlength >= body.length && body.length !==0)
   }
 }
 
-
-const namecheck=(name:string):inputcheck=>{
-  const maxlength=30
-  if(maxlength >= name.length){
-    return{iscorrect:true,status:200}
-  }else{
-    return{iscorrect:false,status:400}
+class namecheck{
+  iscorrect:boolean;
+  constructor(name:string){
+    this.iscorrect=this.checklength(name)
+  }
+  private checklength=(name:string)=>{
+    const maxlength=30
+    return(maxlength >= name.length)
   }
 }
-
 
 const hashcheck=(hash:string):inputcheck=>{
   if(checkhash(hash)){

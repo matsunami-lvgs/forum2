@@ -1,6 +1,5 @@
 import express from 'express';
 import {
-  insert,
   selectAll,
   deletewhereID,
   updatewhereID,
@@ -14,6 +13,7 @@ import {
   checkhash,
   deletesession,
 } from './sessiondb_cliant';
+import {posttimeline} from './inputcheck'
 
 const LocalStrategy = passportLocal.Strategy;
 const router = express.Router();
@@ -66,21 +66,8 @@ router.get('/api/timeline', async function (req, res, next) {
 });
 
 router.post('/api/timeline', async function (req, res, next) {
-  if (
-    bodylengthcheck(req.body.postbody) === false ||
-    namelengthcheck(req.body.postwriter) === false
-  ) {
-    res.status(400);
-    res.json();
-    return;
-  }
-  console.log(
-    `[writer]:${req.body.postwriter} [body]:${
-      req.body.postbody
-    } [timestamp]:${new Date()}`
-  );
-  console.log(req.body);
-  await insert(req.body.postwriter, req.body.postbody);
+  const pt = new posttimeline(req.body.inputbody,req.body.inputname)
+  pt.insert.execute()
   res.json();
 });
 

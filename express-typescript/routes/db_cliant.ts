@@ -50,10 +50,16 @@ Posts.init(
   }
 );
 
-const insert = async function (inputname: string, inputbody: string) {
-  await Posts.create({
-    name: inputname,
-    body: inputbody,
+class insert {
+  private inputname:string
+  private inputbody:string
+  constructor(inputname: string, inputbody: string){
+    this.inputbody = inputbody
+    this.inputname = inputname
+  }
+  execute =()=> Posts.create({
+    name: this.inputname,
+    body: this.inputbody,
     showCreated: formatTimestamp(new Date()),
   });
 };
